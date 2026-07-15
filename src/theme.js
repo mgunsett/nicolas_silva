@@ -2,26 +2,26 @@ import { extendTheme } from '@chakra-ui/react'
 
 // Paleta de marca — fuente única de verdad para los colores del proyecto
 const brand = {
-  brown:      '#141516', // azul principal
-  brownDark:  '#0B2A4A', // azul profundo
-  brownLight: '#4D93D6', // azul claro
-  amber:      '#bda78e', // detalle rojizo/dorado
-  amber2:     '#993f3f8e',
-  amberDark:  '#7A1F1F', // detalle rojizo/dorado oscuro
-  amberLight: '#bda78e4f', // detalle rojizo/dorado claro
-  dorado:     '#c0ab32', // dorado
-  orange:     '#a36b2c', // naranja (hover de botones)
-  orangeDark: '#7a4e1f', // naranja oscuro (hover de botones)
-  orangeLight:'#c08b4a', // naranja claro (hover de botones)
-  dark:       '#2324249f',//'#532626', // azul casi negro (fondo)
+  brown:      '#141516', // negro base (escudo Cusco FC)
+  brownDark:  '#000000', // negro profundo
+  brownLight: '#3A362C', // negro cálido/verdoso (sombra dorada)
+  amber:      '#C6A24A', // dorado principal (escudo/camiseta)
+  amber2:     '#c6a24a8e',
+  amberDark:  '#8A6E2A', // dorado oscuro
+  amberLight: '#c6a24a4f', // dorado claro translúcido
+  dorado:     '#D4B45A', // dorado camiseta (más luminoso)
+  orange:     '#B8862F', // dorado-ámbar (hover de botones)
+  orangeDark: '#8A6522', // dorado-ámbar oscuro (hover de botones)
+  orangeLight:'#D9A94A', // dorado-ámbar claro (hover de botones)
+  dark:       '#2324249f',//'#532626', // fondo oscuro (mantener)
   dark3:      '#232424a1',
   dark2:      '#a5a4a4',
-  gray:       '#7A8CA3', // azul grisáceo (texto secundario)
-  gray2:      '#884545',
+  gray:       '#9C8F6E', // grisáceo cálido dorado (texto secundario)
+  gray2:      '#6E5A2E', // ámbar apagado
   bone:       '#FFFFFF', // blanco (texto principal)
-  boneWarm:   '#3083e2', // blanco azulado (detalles)
+  boneWarm:   '#E5CE8A', // dorado claro (detalles)
   rec:        '#E5484D', // rojo del indicador REC
-  bgRef:      '#bda78e1a'// bg de hover en cajas
+  bgRef:      '#bda78e1a'// bg de hover en cajas (mantener)
 }
 
 // Colores de la firma del desarrollador (crédito en el footer)

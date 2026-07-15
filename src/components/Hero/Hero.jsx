@@ -53,7 +53,7 @@ function PlayerPanel() {
           </Text>
         </Flex>
         <Flex justifyContent='flex-start' alignItems={'flex-end'} gap={{base:'8px',md:'10px'}} spacing={1} mt={'3px'} ml={-1}>
-          <Image src={playerData.logoCurrentClub} ml={{base:'2px',md:'none'}} w={{ base: '20px', md: '28px' }} h={{base:'20px',md:'30px'}} />
+          <Image src={playerData.logoCurrentClub} ml={{base:'2px',md:'none'}} w={{ base: '20px', md: '30px' }} h={{base:'20px',md:'30px'}} />
           <Text fontFamily="mono" fontSize={{base:'xs',md:"md"}} color="brand.amber" letterSpacing="wider">
             {playerData.currentClub}
           </Text>
@@ -71,6 +71,7 @@ export default function Hero() {
   const line2Ref     = useRef(null)
   const vignetteRef  = useRef(null)
   const { matches }  = useMatches()
+  const [amber] = useToken('colors', ['brand.amber'])
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -210,9 +211,11 @@ export default function Hero() {
               display="block"
               fontFamily="heading"
               fontSize={{ base: '28vw', md: '16vw', lg: '13vw' }}
-              color="brand.amber"
+              letterSpacing="2px"
+              color="transparent"
               lineHeight={0.9}
               style={{ opacity: 0 }}
+              sx={{ WebkitTextStroke: `2px ${amber}` }}
             >
               {playerData.fullName}
             </Text>

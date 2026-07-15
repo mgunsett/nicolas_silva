@@ -38,15 +38,15 @@ import ledsports from '@assets/contact3.webp'
 import moon from '@assets/contact4.webp'
 
 
-const name = 'LISANDRO'
-const fullName = 'ALZUGARAY'
+const name = 'NICOLAS'
+const fullName = 'SILVA'
 
 export const playerData = {
   name,
   fullName,
   initials: `${name[0]}${fullName[0]}`, // iniciales para logos (PF)
   displayName: `${name} ${fullName}`,   // nombre completo para textos legales / alt
-  number: 30,
+  number: 26,
   position: 'Mediocampista',
   positionShort: 'MID',
   nationality: 'Argentina',
@@ -56,8 +56,8 @@ export const playerData = {
   weight: '70kg',
   foot: 'Derecho',
   birthDate: '17 / 04 / 1990',
-  birthPlace: 'Viale, Argentina',
-  currentClub: 'Universitario',
+  birthPlace: 'Las Parejas, Santa Fe, Argentina',
+  currentClub: 'Cusco FC',
   logoCurrentClub: universitario,
   image: polaco1,
   
