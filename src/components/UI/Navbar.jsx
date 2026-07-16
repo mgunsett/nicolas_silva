@@ -83,7 +83,7 @@ export default function Navbar() {
       >
         {/* Logo */}
         <Text
-          fontFamily="heading"
+          fontFamily='"Shadows Into Light", cursive'
           fontSize="2xl"
           letterSpacing="wider"
           color="brand.amber"
@@ -107,7 +107,7 @@ export default function Navbar() {
               px={4}
               py={2}
               borderRadius="10px"
-              fontFamily="mono"
+              fontFamily='"Shadows Into Light", cursive'
               fontSize="2xs"
               fontWeight="500"
               letterSpacing="wider"
@@ -149,14 +149,14 @@ export default function Navbar() {
           py={'5px'}
           bg="brand.amber"
           border="1px solid"
-          borderColor= 'brand.amberLight'
+          borderColor='brand.amberLight'
           borderRadius={'5px'}
-          fontFamily="mono"
+          fontFamily='"Shadows Into Light", cursive'
           fontSize="2xs"
           fontWeight="600"
           letterSpacing="wider"
           textTransform="uppercase"
-          color="brand.gray2"
+          color="brand.brownLight"
           cursor="pointer"
           transition="all 0.2s"
           _hover={{ bg: 'brand.brown', color: 'white' }}

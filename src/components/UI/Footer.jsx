@@ -60,7 +60,7 @@ export default function Footer() {
           style={{ textDecoration: 'none' }}
         >
           <Text
-            fontFamily="heading"
+            fontFamily='"Shadows Into Light", cursive'
             fontSize={{ base: '46px', md: '36px' }}
             letterSpacing="0.08em"
             color="brand.amber"
@@ -89,9 +89,11 @@ export default function Footer() {
             color="dev.green"
             _hover={{ borderColor: 'rgba(232,213,163,0.44)', color: 'rgba(232,213,163,0.5)' }}
             transition="color 0.3s"
-            fontSize="14px"
+            fontSize="18px"
+            fontFamily='"Shadows Into Light", cursive'
+            ml="2px"
             >
-              Matias Gunsett <LiaLaptopCodeSolid style={{ marginLeft: '4px', display: 'inline-block', verticalAlign: 'middle', fontSize: '20px', color: devCream }} />
+              Matias Gunsett <LiaLaptopCodeSolid style={{ marginLeft: '0px', display: 'inline-block', verticalAlign: 'middle', fontSize: '20px', color: devCream }} />
             </Link>
           </Text>
       </Flex>

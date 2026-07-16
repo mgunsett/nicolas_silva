@@ -25,6 +25,11 @@ import image5 from '@assets/gallery/image5.webp'
 import image6 from '@assets/gallery/image6.webp'
 import image7 from '@assets/gallery/image7.webp'
 import image8 from '@assets/gallery/image8.webp'
+import image9 from '@assets/gallery/image9.webp'
+import image10 from '@assets/gallery/image10.webp'
+import image11 from '@assets/gallery/image11.webp'
+import image12 from '@assets/gallery/image12.webp'
+import image13 from '@assets/gallery/image13.webp'
 //Video
 import photoGraph from '@assets/perfil_video.webp'
 //Prensa
@@ -210,13 +215,19 @@ export const playerData = {
 
 
   gallery: [
-    { id: 1, src: image1, alt: 'Francisco Fydriszewski', caption: 'Liga Profesional 2024', category: 'Partido', aspect: 'wide' },
-    { id: 2, src: image2, alt: 'Francisco Fydriszewski', caption: 'Festejo ante Racing',    category: 'Festejo', aspect: 'tall' },
-    { id: 3, src: image3, alt: 'Francisco Fydriszewski', caption: 'Pretemporada 2025',       category: 'Entrenamiento', aspect: 'square' },
-    { id: 4, src: image4, alt: 'Francisco Fydriszewski', caption: 'Copa Argentina 2024',     category: 'Partido', aspect: 'wide' },
-    { id: 5, src: image5, alt: 'Francisco Fydriszewski', caption: 'Plantel Talleres 2024',   category: 'Equipo',  aspect: 'wide' },
-    { id: 6, src: image6, alt: 'Francisco Fydriszewski', caption: 'Foto oficial 2024',       category: 'Retrato', aspect: 'tall' },
-    { id: 7, src: image7, alt: 'Francisco Fydriszewski', caption: 'Liga Profesional 2025', category: 'Partido', aspect: 'wide' },
+    { id: 1, src: image1, alt: 'Nicolas Silva', caption: 'Cusco FC', category: 'Partido', aspect: 'wide' },
+    { id: 2, src: image2, alt: 'Nicolas Silva', caption: 'Cusco FC',    category: 'Festejo', aspect: 'tall' },
+    { id: 3, src: image3, alt: 'Nicolas Silva', caption: 'Cusco FC', category: 'Entrenamiento', aspect: 'square' },
+    { id: 4, src: image4, alt: 'Nicolas Silva', caption: 'Cusco FC',     category: 'Partido', aspect: 'wide' },
+    { id: 5, src: image5, alt: 'Nicolas Silva', caption: 'Cusco FC',   category: 'Equipo',  aspect: 'wide' },
+    { id: 6, src: image6, alt: 'Nicolas Silva', caption: 'Cusco FC',       category: 'Retrato', aspect: 'tall' },
+    { id: 7, src: image7, alt: 'Nicolas Silva', caption: 'Cusco FC', category: 'Partido', aspect: 'wide' },
+    { id: 8, src: image8, alt: 'Nicolas Silva', caption: 'Cusco FC',     category: 'Partido', aspect: 'wide' },
+    { id: 9, src: image9, alt: 'Nicolas Silva', caption: 'Cusco FC', category: 'Partido', aspect: 'wide' },
+    { id: 10, src: image10, alt: 'Nicolas Silva', caption: 'Cusco FC',     category: 'Partido', aspect: 'wide' },
+    { id: 11, src: image11, alt: 'Nicolas Silva', caption: 'Cusco FC', category: 'Partido', aspect: 'wide' },
+    { id: 12, src: image12, alt: 'Nicolas Silva', caption: 'Cusco FC',     category: 'Partido', aspect: 'wide' },
+    { id: 13, src: image13, alt: 'Nicolas Silva', caption: 'Cusco FC', category: 'Partido', aspect: 'wide' },
   ],
 
   socialMedia: [

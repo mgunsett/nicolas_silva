@@ -148,11 +148,12 @@ export default function Hero() {
         
         {/* Player photo */}
         <Box
+          className="player-photo-container"
           position="absolute"
           inset={0}
           zIndex={{base: 3, md: 5,  lg:9}}
-          pl={{ base: '27%', lg: '10%' }}
-          pt={{ base: '64%', lg: '5%' }}
+          pl={{ base: '29%', lg: '10%' }}
+          pt={{ base: '23%', lg: '5%' }}
           display="flex"
           justifyContent={{ base: 'flex-start', lg: 'flex-start' }}
           alignItems={{ base: 'flex-start', lg: 'flex-start' }}
@@ -167,8 +168,8 @@ export default function Hero() {
               className="player-photo"
               src={playerData.image}
               alt={`${playerData.displayName}, ${playerData.position.toLowerCase()} profesional de ${playerData.currentClub}`}
-              h={{ base: '80%', lg: '100%' }}
-              w={{ base: '30vw', lg: '30vw' }}
+              h={{ base: '100%', lg: '100%' }}
+              w={{ base: '55vw', lg: '30vw' }}
               objectFit="contain"
               objectPosition="bottom center"
               draggable={false}
@@ -243,16 +244,13 @@ export default function Hero() {
             
           </Flex>
         </Box>
-
-
-
         {/* Player info — bottom left */}
         <Box
           className="player-info"
           position="absolute"
-          bottom={{ base: 'none', lg: '20%' }}
+          bottom={{ base: 'auto', lg: '20%' }}
           left={{ base: '5%', lg: '39%' }}
-          top={{ base: '36%', lg: 'none' }}
+          top={{ base: '46%', lg: 'auto' }}
           zIndex={15}
 
         >

@@ -29,14 +29,17 @@
 }
 
 @media screen and (max-width: 408px){
+  .player-photo-container {
+    padding-top: 90px !important;
+  }
   .player-photo { 
-    width: 255px !important;
+    width: 230px !important;
     max-width: none !important;
   }
   .player-number {
     font-size: 110px !important;
   }
   .player-info {
-    bottom: 42% !important;
+    top: 295px !important;
   }
 }

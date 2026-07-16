@@ -80,7 +80,7 @@ function SocialCard({ item }) {
         >
           {item.label}
         </Text>
-        <Text fontFamily="heading" color={'brand.bone'} fontSize={{base:'xl',md:"2xl"}} _groupHover={{ color: 'brand.gray2' }}>
+        <Text fontFamily='"Shadows Into Light", cursive' color={'brand.bone'} fontSize={{base:'xl',md:"2xl"}} _groupHover={{ color: 'brand.gray2' }}>
 
           {item.handle}
         </Text>
@@ -153,7 +153,7 @@ function ContactRow({ item, gold }) {
             {item.label}
           </Text>
           <Text 
-          fontFamily="heading" 
+          fontFamily='"Shadows Into Light", cursive' 
           fontSize="2xl" 
           color="brand.bone" 
           fontWeight={500} 
