@@ -6,16 +6,15 @@ import { IoMdStats } from 'react-icons/io'
 import polaco1 from '@assets/polaco1.webp'
 
 import argentina from '@assets/argentina.webp'
-import universitario from '@assets/escudo_univ.webp'
+import cusco from '@assets/escudo_cusco.webp'
 //Escudos trayectoria
-import escudoAtlParana from '@assets/escudos/escudo_atlparana.webp'
-import escudoNewells from '@assets/escudos/escudo_newells.webp'
-import escudoAlhali from '@assets/escudos/escudo_alhali.webp'
-import escudoCentralCordoba from '@assets/escudos/escudo_centralcordoba.webp'
+import escudoArgentinos from '@assets/escudos/escudo_argentinos.webp'
+import escudoBanfield from '@assets/escudos/escudo_banfield.webp'
+import escudoBocaUnidos from '@assets/escudos/escudo_bocaunidos.webp'
+import escudoColon from '@assets/escudos/escudo_colon.webp'
+import escudoHuracan from '@assets/escudos/escudo_huracan.webp'
+import escudoLasParejas from '@assets/escudos/escudo_lasparejas.webp'
 import escudoChaco from '@assets/escudos/escudo_chaco.webp'
-import escudoLigadequito from '@assets/escudos/escudo_ligadequito.webp'
-import escudoSanjose from '@assets/escudos/escudo_sanjose.webp'
-import escudoUcatolica from '@assets/escudos/escudo_ucatolica.webp'
 import escudoAucas from '@assets/escudos/escudo_aucas.webp'
 //Gallery
 import image1 from '@assets/gallery/image1.webp'
@@ -47,118 +46,126 @@ export const playerData = {
   initials: `${name[0]}${fullName[0]}`, // iniciales para logos (PF)
   displayName: `${name} ${fullName}`,   // nombre completo para textos legales / alt
   number: 26,
-  position: 'Mediocampista',
-  positionShort: 'MID',
+  position: 'Extremo Derecho',
+  positionShort: 'ED',
   nationality: 'Argentina',
   nationalityFlag: argentina,
   age: 36,
-  height: '1.76m',
+  height: '1.63m',
   weight: '70kg',
   foot: 'Derecho',
-  birthDate: '17 / 04 / 1990',
+  birthDate: '24 / 01 / 1990',
   birthPlace: 'Las Parejas, Santa Fe, Argentina',
   currentClub: 'Cusco FC',
-  logoCurrentClub: universitario,
+  logoCurrentClub: cusco,
   image: polaco1,
   
 
   stats: [
-    { label: 'Velocidad',      value: 91 },
-    { label: 'Definición',     value: 88 },
-    { label: 'Regate',         value: 84 },
-    { label: 'Pases Completos',    value: 79 },
-    { label: 'Presión Alta',   value: 82 },
-    { label: 'Visión de Juego',value: 79 },
+    { label: 'Velocidad',      value: 94 },
+    { label: 'Definición',     value: 79 },
+    { label: 'Regate',         value: 89 },
+    { label: 'Pases Completos',    value: 83 },
+    { label: 'Presión Alta',   value: 80 },
+    { label: 'Visión de Juego',value: 77 },
   ],
 
   seasonStats: [
-    { label: 'Partidos',    value: 16 },
+    { label: 'Partidos',    value: 60 },
     { label: 'Goles',       value: 3 },
-    { label: 'Asistencias', value: 1  },
-    { label: 'Tiros al árco', value: 8  },
-    { label: 'Min / Part.', value: "1,022'" },
-    { label: 'Valoración', value: 7.4  },
+    { label: 'Asistencias', value: 5  },
+    { label: 'Tiros al árco', value: 19  },
+    { label: 'Min / Part.', value: "2,589'" },
+    { label: 'Valoración', value: 7.1  },
 
   ],
 
   clubs: [
     {
-      name:    'Universitario',
+      name:    'Cusco FC',
       country: 'Perú',
-      years:   '2026 — Actualidad',
-      logo:    universitario,
+      years:   '2024 — Actualidad',
+      logo:    cusco,
       titles:  [],
-      info:    '',
+      info:    'Subcampeón de la Liga 1 de Perú 2025',
     },
     {
-      name:    'Liga de Quito',
-      country: 'Ecuador',
-      years:   '2023 — 2025',
-      logo:    escudoLigadequito,
-      titles:  ['Serie A Ecuador 2023','Copa Sudamericana 2023', 'Serie A Ecuador 2024', 'Supercopa Ecuador 2024'],
-      info:    '',
-    },
-    {
-      name:    'Al-Hali Saudi',
-      country: 'Arabia Saudita',
-      years:   '2022',
-      logo:    escudoAlhali,
+      name:    'Chaco For Ever',
+      country: 'Argentina',
+      years:   '2022 — 2023',
+      logo:    escudoChaco,
       titles:  [],
       info:    '',
-    },
-    {
-      name:    'Universidad Católica',
-      country: 'Ecuador',
-      years:   '2021 — 2022',
-      logo:    escudoUcatolica,
-      titles:  [],
-      info:    '11 ideal de la Serie A de Ecuador 2021',
     },
     {
       name:    'S.D Aucas',
       country: 'Ecuador',
-      years:   '2020',
+      years:   '2022',
       logo:    escudoAucas,
+      titles:  ['Campeón de la Serie A 2022'],
+      info:    '',
+    },
+    {
+      name:    'Huracán',
+      country: 'Argentina',
+      years:   '2021',
+      logo:    escudoHuracan,
+      titles:  [],
+      info:    'PRESTAMO',
+    },
+    {
+      name:    'Argentinos Juniors',
+      country: 'Argentina',
+      years:   '2019 — 2021',
+      logo:    escudoArgentinos,
       titles:  [],
       info:    '',
     },
     {
-      name:    'Central Córdoba',
+      name:    'Banfield',
       country: 'Argentina',
-      years:   '2019',
-      logo:    escudoCentralCordoba,
+      years:   '2018 — 2019',
+      logo:    escudoBanfield,
       titles:  [],
       info:    '',
     },
     {
-      name:    'Newell\'s Old Boys',
+      name:    'Huracán',
       country: 'Argentina',
-      years:   '2018',
-      logo:    escudoNewells,
+      years:   '2017 — 2018',
+      logo:    escudoHuracan,
+      titles:  [],
+      info:    '',
+    },
+    {
+      name:    'Colón de Santa Fe',
+      country: 'Argentina',
+      years:   '2016 — 2017',
+      logo:    escudoColon,
+      titles:  [],
+      info:    '',
+    },
+    {
+      name:    'Boca Unidos',
+      country: 'Argentina',
+      years:   '2014 — 2015',
+      logo:    escudoBocaUnidos,
       titles:  [],
       info:    '',
     },
     {
       name:    'Chaco For Ever',
       country: 'Argentina',
-      years:   '2013-2014 / 2017',
+      years:   '2013 — 2014',
       logo:    escudoChaco,
       titles:  [],
       info:    '',
     },
     {
-      name:    'San José',
+      name:    'Sportivo Las Parejas',
       country: 'Argentina',
-      years:   '2016 — 2017',
-      logo:    escudoSanjose,
-      titles:  [],
-      info:    '',
-    },
-    {
-      name:    'Atlético Paraná',
-      country: 'Argentina',
-      years:   '2011-2013 / 2015',
-      logo:    escudoAtlParana,
+      years:   '2012 — 2013',
+      logo:    escudoLasParejas,
       titles:  [],
       info:    '',
     },
@@ -168,36 +175,36 @@ export const playerData = {
     {
       id: 'v1',
       // instagramId: código del reel. En https://www.instagram.com/reel/DXXXXXXXXXX/ es "DXXXXXXXXXX"
-      instagramId: 'DXvelmBtUmJ',
-      title: 'Libertadores 26',
-      fullTitle: 'Lisandro Alzugaray | Jugadas destacadas 2026',
-      season: 'GOL VS NACIONAL',
-      league: 'CONMEBOL Libertadores 2026',
+      instagramId: 'DRar5BiDxW_',
+      title: 'Gol vs Sp Huancayo 2025',
+      fullTitle: 'Nicolas Silva | Jugadas destacadas 2025',
+      season: 'Gol vs Sp Huancayo 2025',
+      league: 'LIGA 1 2025',
       thumbnail: image7,
       cover: image7,
-      category: 'Highlights',
+      category: 'Goles',
     },
     {
       id: 'v2',
-      instagramId: 'DWEUMU0AL2f',
-      title: '2026',
-      fullTitle: 'Lisandro Alzugaray | Compilado de goles',
-      season: 'Compilado',
-      league: 'CONMEBOL Libertadores 2025',
+      instagramId: 'DMT6HFkM00D',
+      title: 'Gol vs Alianza 2025',
+      fullTitle: 'Nicolas Silva | Compilado de goles',
+      season: 'Gol vs Alianza 2025',
+      league: 'LIGA 1 2025',
       thumbnail: image1,
       cover: image1,
       category: 'Goles',
     },
     {
       id: 'v3',
-      instagramId: 'DTlGApKkWzo',
-      title: 'Temporada 2025',
-      fullTitle: 'Lisandro Alzugaray | Asistencias y juego',
-      season: 'Liga de Quito',
-      league: 'Liga de Quito',
+      instagramId: 'DIuSnoTxJGS',
+      title: 'Jugador de Partido 2025',
+      fullTitle: 'Nicolas Silva | Asistencias y juego',
+      season: 'Jugador de Partido 2025',
+      league: 'LIGA 1 2025',
       thumbnail: image4,
       cover: image4,
-      category: 'Asistencias',
+      category: 'Highlights',
     },
   ],
 

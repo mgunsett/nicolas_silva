@@ -208,11 +208,11 @@ export function ContactSection() {
       <Box position="relative" zIndex={1} maxW="1400px" mx="auto">
         {/* Header */}
         <Box ref={headerRef} mb={{ base: 8, md: 10 }}>
-          <Text fontFamily="mono" fontSize="10px" color="brand.bone" letterSpacing="0.28em"
+          <Text fontFamily='"Shadows Into Light", cursive' fontSize="10px" color="brand.bone" letterSpacing="0.28em"
                   textTransform="uppercase" letterSpacing="widest">
             #Redes
           </Text>
-          <Text as="h2" fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
+          <Text as="h2" fontFamily="heading" fontWeight="bold" fontSize={{ base: '5xl', lg: '6xl' }}
                   color="brand.amber" lineHeight={1}>
             Contacto
           </Text>

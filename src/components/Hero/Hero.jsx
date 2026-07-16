@@ -21,40 +21,30 @@ function PlayerPanel() {
     justifyContent={'flex-start'}
     alignItems={'flex-start'}
     gap={{base:2,md:4}}
+    fontFamily='"Shadows Into Light", cursive'
     >
-      <Text
-        className="player-number"
-        fontFamily="heading"
-        fontSize={{ base: '120px', md: '100px' }}
-        ml={{ base: '-10px', md: 0 }}
-        lineHeight={0.9}
-        borderColor={'brand.amber'}
-        color="transparent"
-        sx={{ WebkitTextStroke: `2px ${amber}` }}
-      >
-        {playerData.number}
-      </Text>
-      <Box w={{base:'60px',md:"1px"}} h={{base:"1px", md: "70px", lg: "80px"}} bg="brand.amber" />
+      
+      <Box w={{base:'60px',md:"1px"}} h={{base:"1px", md: "70px", lg: "90px"}} bg="brand.amber" />
       <Flex direction={'column'} justifyContent={'flex-start'} gap={1}>
         <Flex gap={1} justifyContent='flex-start' alignItems='center'>
-          <Text fontFamily="mono" fontSize={{base:'9px',md:"10px"}} color="brand.bone"
+          <Text  fontSize={{base:'9px',md:"10px"}} color="brand.bone"
             textTransform="uppercase" letterSpacing="widest">
             Posición
           </Text>
-          <Text fontFamily="mono" fontSize={{base:'9px',md:"12px"}} color="brand.amber"
+          <Text  fontSize={{base:'9px',md:"12px"}} color="brand.amber"
             fontWeight="700" textTransform="uppercase" letterSpacing="widest">
             {playerData.position}
           </Text>
         </Flex>
-        <Flex justifyContent='flex-start' alignItems='center' gap={{base:'10px',md:'12px'}}>
-          <Image src={playerData.nationalityFlag} w={{ base: '15px', md: '20px' }} />
-          <Text mb={'-5px'} fontFamily="mono" fontSize={{base:'xs',md:"md"}} color="brand.amber" letterSpacing="wider">
+        <Flex justifyContent='flex-start' alignItems='center' gap={{base:'10px',md:'14px'}}>
+          <Image src={playerData.nationalityFlag} w={{ base: '15px', md: '25px' }} />
+          <Text mb={'-5px'} ffontSize={{base:'xs',md:"md"}} color="brand.amber" letterSpacing="wider">
             {playerData.nationality}
           </Text>
         </Flex>
         <Flex justifyContent='flex-start' alignItems={'flex-end'} gap={{base:'8px',md:'10px'}} spacing={1} mt={'3px'} ml={-1}>
           <Image src={playerData.logoCurrentClub} ml={{base:'2px',md:'none'}} w={{ base: '20px', md: '30px' }} h={{base:'20px',md:'30px'}} />
-          <Text fontFamily="mono" fontSize={{base:'xs',md:"md"}} color="brand.amber" letterSpacing="wider">
+          <Text  fontSize={{base:'xs',md:"md"}} color="brand.amber" letterSpacing="wider">
             {playerData.currentClub}
           </Text>
         </Flex>
@@ -71,7 +61,7 @@ export default function Hero() {
   const line2Ref     = useRef(null)
   const vignetteRef  = useRef(null)
   const { matches }  = useMatches()
-  const [amber] = useToken('colors', ['brand.amber'])
+  const [amber, bgRef] = useToken('colors', ['brand.amber', 'brand.bgRef'])
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -146,7 +136,7 @@ export default function Hero() {
             aria-hidden="true"
             draggable={false}
             // Controlá el tamaño acá 👇
-            w={{ base: '100vw', md: '62vw' }}
+            w={{ base: '100vw', md: '82vw' }}
             h={{ base: '100vh', md: 'auto' }}
             objectFit={{ base: 'cover', md: 'contain' }}
             objectPosition={{ base: 'center', md: 'center top' }}
@@ -196,7 +186,7 @@ export default function Hero() {
           flexDir="column"
           alignItems='center'
           justifyContent={{ base: 'flex-start', md: 'center' }}
-          pl={{ base: 0, lg: '15%' }}
+          pl={{ base: 0, lg: '16%' }}
           pt={{ base: '22%', lg: '0%' }}
           mt={{ base: '0', lg: '-4%' }}
         >
@@ -205,27 +195,45 @@ export default function Hero() {
           as="h1" 
           overflow="hidden"
           >
-            <Text
-              ref={line2Ref}
-              as="span"
-              display="block"
-              fontFamily="heading"
-              fontSize={{ base: '28vw', md: '16vw', lg: '13vw' }}
-              letterSpacing="2px"
-              color="transparent"
-              lineHeight={0.9}
-              style={{ opacity: 0 }}
-              sx={{ WebkitTextStroke: `2px ${amber}` }}
+            <Flex
+              direction={{ base: 'row', md: 'row' }}
+              alignItems={{ base: 'flex-start', md: 'flex-start' }}
+              justifyContent={{ base: 'center', md: 'flex-start' }}
+              gap={{ base: 2, md: 2 }}
             >
-              {playerData.fullName}
-            </Text>
+              <Text
+                ref={line2Ref}
+                as="span"
+                display="block"
+                fontFamily='"Shadows Into Light", cursive'
+                fontSize={{ base: '28vw', md: '16vw', lg: '13vw' }}
+                letterSpacing="2px"
+                color="transparent"
+                lineHeight={0.9}
+                style={{ opacity: 0 }}
+                sx={{ WebkitTextStroke: `2px ${amber}` }}
+              >
+                {playerData.fullName}
+              </Text>
+              <Text
+                className="player-number"
+                fontFamily='"Shadows Into Light", cursive'
+                fontSize={{ base: '28vw', md: '16vw', lg: '13vw' }}
+                ml={{ base: '-10px', md: 0 }}
+                lineHeight={0.9}
+                color="brand.boneWarm"
+                // sx={{ WebkitTextStroke: `2px #e7e5e591` }}
+              >
+                {playerData.number}
+              </Text>
+            </Flex>
             <Text
-              ref={line1Ref}
+              ref={line1Ref} 
               as="span"
               display="block"
-              fontFamily="heading"
+              fontFamily='"Shadows Into Light", cursive'
               fontSize={{ base: '25vw', md: '16vw', lg: '13vw' }}
-              color="brand.gray2"
+              color="brand.amberDark"
               lineHeight={0.9}
               style={{ opacity: 0 }}
               mt={{ base: '-10px', md: '-20px', lg: '-30px' }}
@@ -237,12 +245,13 @@ export default function Hero() {
         </Box>
 
 
+
         {/* Player info — bottom left */}
         <Box
           className="player-info"
           position="absolute"
-          bottom={{ base: '37%', lg: '22%' }}
-          left={{ base: '5%', lg: '35%' }}
+          bottom={{ base: '37%', lg: '20%' }}
+          left={{ base: '5%', lg: '39%' }}
           zIndex={15}
         >
           <PlayerPanel />

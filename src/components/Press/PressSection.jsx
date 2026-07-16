@@ -188,11 +188,11 @@ export default function PressSection() {
         {/* Header */}
         <Flex align="flex-end" justify="space-between" mb={4} ref={titleRef}>
           <Box>
-            <Text fontFamily="mono" fontSize={{base:'12px',md:"10px"}} color="brand.bone"
+            <Text fontFamily='"Shadows Into Light", cursive' fontSize={{base:'12px',md:"10px"}} color="brand.bone"
                   textTransform="uppercase" letterSpacing="widest">
               Testimonios
             </Text>
-            <Text as="h2" fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
+            <Text as="h2" fontFamily="heading" fontWeight="bold" fontSize={{ base: '5xl', lg: '6xl' }}
                   color="brand.amber" lineHeight={1}>
               Prensa
             </Text>
