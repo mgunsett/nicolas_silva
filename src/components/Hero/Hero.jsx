@@ -24,7 +24,7 @@ function PlayerPanel() {
     fontFamily='"Shadows Into Light", cursive'
     >
       
-      <Box w={{base:'60px',md:"1px"}} h={{base:"1px", md: "70px", lg: "90px"}} bg="brand.amber" />
+      <Box w={{base:'120px',md:"1px"}} h={{base:"1px", md: "70px", lg: "90px"}} bg="brand.amber" />
       <Flex direction={'column'} justifyContent={'flex-start'} gap={1}>
         <Flex gap={1} justifyContent='flex-start' alignItems='center'>
           <Text  fontSize={{base:'9px',md:"10px"}} color="brand.bone"
@@ -121,7 +121,7 @@ export default function Hero() {
           display="flex"
           justifyContent="center"
           alignItems={{ base: 'flex-end', md: 'flex-start' }}
-          mt={{ base: 10, md: 12 }}
+          mt={{ base: 20, md: 12 }}
           ml={{ base: '0%', md: '4%' }}
           sx={{
             maskImage:
@@ -137,7 +137,7 @@ export default function Hero() {
             draggable={false}
             // Controlá el tamaño acá 👇
             w={{ base: '100vw', md: '82vw' }}
-            h={{ base: '100vh', md: 'auto' }}
+            h={{ base: '90vh', md: 'auto' }}
             objectFit={{ base: 'cover', md: 'contain' }}
             objectPosition={{ base: 'center', md: 'center top' }}
             opacity={{ base: 0.21, lg: 0.20 }}
@@ -152,7 +152,7 @@ export default function Hero() {
           inset={0}
           zIndex={{base: 3, md: 5,  lg:9}}
           pl={{ base: '27%', lg: '10%' }}
-          pt={{ base: '24%', lg: '5%' }}
+          pt={{ base: '64%', lg: '5%' }}
           display="flex"
           justifyContent={{ base: 'flex-start', lg: 'flex-start' }}
           alignItems={{ base: 'flex-start', lg: 'flex-start' }}
@@ -160,15 +160,15 @@ export default function Hero() {
         >
           <Box
             ref={photoRef}
-            h={{ base: '78vh', lg: '90vh' }}                               
+            h={{ base: '70vh', lg: '90vh' }}                               
             style={{ clipPath: 'inset(100% 0 0 0)', opacity: 0 }}
           >
             <Image
               className="player-photo"
               src={playerData.image}
               alt={`${playerData.displayName}, ${playerData.position.toLowerCase()} profesional de ${playerData.currentClub}`}
-              h={{ base: '90%', lg: '100%' }}
-              w={{ base: '58vw', lg: '30vw' }}
+              h={{ base: '80%', lg: '100%' }}
+              w={{ base: '30vw', lg: '30vw' }}
               objectFit="contain"
               objectPosition="bottom center"
               draggable={false}
@@ -187,7 +187,7 @@ export default function Hero() {
           alignItems='center'
           justifyContent={{ base: 'flex-start', md: 'center' }}
           pl={{ base: 0, lg: '16%' }}
-          pt={{ base: '22%', lg: '0%' }}
+          pt={{ base: '30%', lg: '0%' }}
           mt={{ base: '0', lg: '-4%' }}
         >
           <Flex 
@@ -196,7 +196,7 @@ export default function Hero() {
           overflow="hidden"
           >
             <Flex
-              direction={{ base: 'row', md: 'row' }}
+              direction='row'
               alignItems={{ base: 'flex-start', md: 'flex-start' }}
               justifyContent={{ base: 'center', md: 'flex-start' }}
               gap={{ base: 2, md: 2 }}
@@ -206,7 +206,7 @@ export default function Hero() {
                 as="span"
                 display="block"
                 fontFamily='"Shadows Into Light", cursive'
-                fontSize={{ base: '28vw', md: '16vw', lg: '13vw' }}
+                fontSize={{ base: '29vw', md: '16vw', lg: '13vw' }}
                 letterSpacing="2px"
                 color="transparent"
                 lineHeight={0.9}
@@ -218,8 +218,8 @@ export default function Hero() {
               <Text
                 className="player-number"
                 fontFamily='"Shadows Into Light", cursive'
-                fontSize={{ base: '28vw', md: '16vw', lg: '13vw' }}
-                ml={{ base: '-10px', md: 0 }}
+                fontSize={{ base: '30vw', md: '16vw', lg: '13vw' }}
+                ml={{ base: '5px', md: 0 }}
                 lineHeight={0.9}
                 color="brand.boneWarm"
                 // sx={{ WebkitTextStroke: `2px #e7e5e591` }}
@@ -250,9 +250,11 @@ export default function Hero() {
         <Box
           className="player-info"
           position="absolute"
-          bottom={{ base: '37%', lg: '20%' }}
+          bottom={{ base: 'none', lg: '20%' }}
           left={{ base: '5%', lg: '39%' }}
+          top={{ base: '36%', lg: 'none' }}
           zIndex={15}
+
         >
           <PlayerPanel />
         </Box>

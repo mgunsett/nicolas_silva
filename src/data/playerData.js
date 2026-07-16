@@ -43,8 +43,8 @@ const fullName = 'SILVA'
 export const playerData = {
   name,
   fullName,
-  initials: `${name[0]}${fullName[0]}`, // iniciales para logos (PF)
-  displayName: `${name} ${fullName}`,   // nombre completo para textos legales / alt
+  initials: `${name[0]}${fullName[0]}`,
+  displayName: `${name} ${fullName}`,
   number: 26,
   position: 'Extremo Derecho',
   positionShort: 'ED',
@@ -174,7 +174,6 @@ export const playerData = {
   videos: [
     {
       id: 'v1',
-      // instagramId: código del reel. En https://www.instagram.com/reel/DXXXXXXXXXX/ es "DXXXXXXXXXX"
       instagramId: 'DRar5BiDxW_',
       title: 'Gol vs Sp Huancayo 2025',
       fullTitle: 'Nicolas Silva | Jugadas destacadas 2025',
@@ -191,8 +190,8 @@ export const playerData = {
       fullTitle: 'Nicolas Silva | Compilado de goles',
       season: 'Gol vs Alianza 2025',
       league: 'LIGA 1 2025',
-      thumbnail: image1,
-      cover: image1,
+      thumbnail: image5,
+      cover: image5,
       category: 'Goles',
     },
     {
@@ -202,35 +201,13 @@ export const playerData = {
       fullTitle: 'Nicolas Silva | Asistencias y juego',
       season: 'Jugador de Partido 2025',
       league: 'LIGA 1 2025',
-      thumbnail: image4,
-      cover: image4,
+      thumbnail: image2,
+      cover: image2,
       category: 'Highlights',
     },
   ],
 
-  press: [
-    {
-      media: 'ESPN Deportes',
-      logo:  logo1,
-      title: 'Lisandro Alzugaray volvió con gol clave para Universitario en CONMEBOL Libertadores',
-      date:  'Abril 2026',
-      url:   'https://espndeportes.espn.com/futbol/copa-libertadores/nota/_/id/16648033/lisandro-alzugaray-volvio-con-gol-clave-para-universitario-en-conmebol-libertadores',
-    },
-    {
-      media: 'CONMEBOL Libertadores',
-      logo:  logo3,
-      title: '🔥⚽🇵🇪 Un delantero siempre presente en la CONMEBOL #Libertadores: @lisandroalzugaray',
-      date:  'Mayo 2026',
-      url:   'https://www.instagram.com/p/DYSwt6NDBIC/?hl=es&img_index=4',
-    },
-    {
-      media: 'CONMEBOL Libertadores',
-      logo:  logo3,
-      title: '¡El equipo de la semana! Lisandro Alzugaray en el 11 ideal tras la semifinal de ida de la CONMEBOL #Libertadores.',
-      date:  'Octubre 2025',
-      url:   'https://x.com/Libertadores/status/1981820492257669422/photo/1?ref_src=twsrc%5Etfw%7Ctwcamp%5Etweetembed%7Ctwterm%5E1981820492257669422%7Ctwgr%5E81681f2548c9342a151787ad10c31eabb903f3c2%7Ctwcon%5Es1_&ref_url=https%3A%2F%2Fwww.teleamazonas.com%2Fdeportes%2Ffutbol%2Flibertadores%2Fseis-futbolistas-liga-quito-equipo-ideal-semana-copa-libertadores-105112%2F',
-    },
-  ],
+
 
   gallery: [
     { id: 1, src: image1, alt: 'Francisco Fydriszewski', caption: 'Liga Profesional 2024', category: 'Partido', aspect: 'wide' },
@@ -247,8 +224,8 @@ export const playerData = {
       label: 'Instagram',
       icon: FaInstagram,
       iconBg: FaInstagram,
-      handle: '@lisandroalzugaray',
-      url: 'https://www.instagram.com/lisandroalzugaray/',
+      handle: '@_silvanicolas',
+      url: 'https://www.instagram.com/_silvanicolas/',
       hoverColor: '#E1306C',
       hoverGradient: 'insta-gradient',
     },
@@ -256,9 +233,9 @@ export const playerData = {
       label: 'TransferMarkt',
       image: transfermkt,
       iconBg: IoMdStats,
-      handle: '@lisandro-alzugaray',
-      url: 'https://www.transfermarkt.com.ar/lisandro-alzugaray/profil/spieler/396920',
-      hoverColor: 'brand.brownLight',
+      handle: '/nicolas-silva',
+      url: 'https://www.transfermarkt.com.ar/nicolas-silva/profil/spieler/422914',
+      hoverColor: '#2e73f2',
     },
   ],
 
