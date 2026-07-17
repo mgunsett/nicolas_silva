@@ -286,7 +286,7 @@ export default function GallerySection() {
         pointerEvents="none"
       />
 
-      <Box maxW="1400px" mx="auto" px={{ base: 5, lg: 10 }} position="relative">
+      <Box maxW="1400px" mx="auto" px={{ base: 2, lg: 0 }} position="relative">
         <Flex align="flex-end" justify="space-between" mb={{ base: 8, md: 10 }} ref={titleRef}>
           <Box>
             <Text fontFamily='"Shadows Into Light", cursive' fontSize="10px" color="brand.bone"

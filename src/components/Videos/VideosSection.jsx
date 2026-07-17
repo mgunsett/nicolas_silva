@@ -115,7 +115,7 @@ export default function VideosSection() {
       position="relative"
       minH="100vh"
       bg="brand.dark"
-      px={{ base: 5, md: 12, lg: 40 }}
+      px={{ base: 2, md: 12, lg: 40 }}
       pt={{ base: 20, md: '10%' }}
       pb={{ base: 12, md: '10%' }}
       overflow="hidden"
@@ -137,9 +137,9 @@ export default function VideosSection() {
         aria-hidden
         position="absolute"
         top={{ base: '10%', md: '12%' }}
-        right={{ base: '-6%', md: '8%' }}
+        right={{ base: '-15%', md: '8%' }}
         fontFamily="heading"
-        fontSize={{ base: '60vw', md: '40vw' }}
+        fontSize={{ base: '80vw', md: '40vw' }}
         lineHeight={0.8}
         color="transparent"
         pointerEvents="none"
@@ -162,7 +162,7 @@ export default function VideosSection() {
         </Flex>
 
         {/* ── Cards ── */}
-        <Box ref={wrapRef} position="relative">
+        <Box ref={wrapRef} position="relative" ml={{ base: 2, md: '0'}}>
           {/* Desktop: en fila */}
           <Flex display={{ base: 'none', md: 'flex' }} justify="center" align="stretch" gap={{ md: 5, lg: 12 }}>
             {videos.map((v, i) => (

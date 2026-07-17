@@ -229,6 +229,7 @@ export default function Hero() {
             </Flex>
             <Text
               ref={line1Ref} 
+              className="player-name"
               as="span"
               display="block"
               fontFamily='"Shadows Into Light", cursive'

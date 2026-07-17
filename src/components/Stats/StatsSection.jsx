@@ -515,7 +515,7 @@ export default function StatsSection() {
       bg="brand.dark"
       pt={{ base: 16, lg: 20 }}
       pb={{ base: 16, lg: 20 }}
-      px={{ base: 5, lg: 10 }}
+      px={{ base: 2, lg: 10 }}
       borderTopLeftRadius={{ base: '14px', lg: '22px' }}
       borderTopRightRadius={{ base: '14px', lg: '22px' }}
       boxShadow="0 -24px 80px rgba(0,0,0,0.65)"

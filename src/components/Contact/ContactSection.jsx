@@ -199,8 +199,8 @@ export function ContactSection() {
       ref={sectionRef}
       position="relative"
       bg="brand.dark"
-      px={{ base: 6, md: 12, lg: 20 }}
-      py={{ base: 20, md: 28 }}
+      px={{ base: 2, md: 12, lg: 20 }}
+      py={{ base: 16, md: 28 }}
       overflow="hidden"
     >
       <Box className="deco-grid" />

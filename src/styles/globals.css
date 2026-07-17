@@ -28,19 +28,25 @@
   }
 }
 
-@media screen and (max-width: 408px){
+@media screen and (max-width: 390px){
   .player-photo-container {
     padding-top: 90px !important;
-    padding-left: 65px !important;
+    padding-left: 45px !important;
   }
   .player-photo { 
-    width: 300px !important;
+    width: 340px !important;
     max-width: none !important;
   }
   .player-number {
     font-size: 110px !important;
   }
-  .player-info {
-    top: 280px !important;
+  .player-name {
+    font-size: 22vw !important;
   }
+  .player-info {
+    top: 300px !important;
+  }
+  /* .player-clubs {
+    padding-right: 0 !important;
+  } */
 }
