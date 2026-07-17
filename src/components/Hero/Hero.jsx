@@ -20,10 +20,9 @@ function PlayerPanel() {
     direction={{base:'column', md:'row'}}
     justifyContent={'flex-start'}
     alignItems={'flex-start'}
-    gap={{base:2,md:4}}
+    gap={{base:4,md:4}}
     fontFamily='"Shadows Into Light", cursive'
-    >
-      
+    > 
       <Box w={{base:'120px',md:"1px"}} h={{base:"1px", md: "70px", lg: "90px"}} bg="brand.amber" />
       <Flex direction={'column'} justifyContent={'flex-start'} gap={1}>
         <Flex gap={1} justifyContent='flex-start' alignItems='center'>
@@ -152,7 +151,7 @@ export default function Hero() {
           position="absolute"
           inset={0}
           zIndex={{base: 3, md: 5,  lg:9}}
-          pl={{ base: '29%', lg: '10%' }}
+          pl={{ base: '25%', lg: '10%' }}
           pt={{ base: '23%', lg: '5%' }}
           display="flex"
           justifyContent={{ base: 'flex-start', lg: 'flex-start' }}
@@ -161,7 +160,7 @@ export default function Hero() {
         >
           <Box
             ref={photoRef}
-            h={{ base: '70vh', lg: '90vh' }}                               
+            h={{ base: '87vh', lg: '90vh' }}                               
             style={{ clipPath: 'inset(100% 0 0 0)', opacity: 0 }}
           >
             <Image
@@ -169,7 +168,7 @@ export default function Hero() {
               src={playerData.image}
               alt={`${playerData.displayName}, ${playerData.position.toLowerCase()} profesional de ${playerData.currentClub}`}
               h={{ base: '100%', lg: '100%' }}
-              w={{ base: '55vw', lg: '30vw' }}
+              w={{ base: '80vw', lg: '30vw' }}
               objectFit="contain"
               objectPosition="bottom center"
               draggable={false}
@@ -233,7 +232,7 @@ export default function Hero() {
               as="span"
               display="block"
               fontFamily='"Shadows Into Light", cursive'
-              fontSize={{ base: '25vw', md: '16vw', lg: '13vw' }}
+              fontSize={{ base: '20vw', md: '16vw', lg: '13vw' }}
               color="brand.amberDark"
               lineHeight={0.9}
               style={{ opacity: 0 }}
@@ -250,9 +249,8 @@ export default function Hero() {
           position="absolute"
           bottom={{ base: 'auto', lg: '20%' }}
           left={{ base: '5%', lg: '39%' }}
-          top={{ base: '46%', lg: 'auto' }}
+          top={{ base: '44%', lg: 'auto' }}
           zIndex={15}
-
         >
           <PlayerPanel />
         </Box>

@@ -31,15 +31,16 @@
 @media screen and (max-width: 408px){
   .player-photo-container {
     padding-top: 90px !important;
+    padding-left: 65px !important;
   }
   .player-photo { 
-    width: 230px !important;
+    width: 300px !important;
     max-width: none !important;
   }
   .player-number {
     font-size: 110px !important;
   }
   .player-info {
-    top: 295px !important;
+    top: 280px !important;
   }
 }
