@@ -1,561 +1,168 @@
-import { useRef, useEffect } from 'react'
-import {
-  Box, Grid, GridItem, Text, Flex, VStack, HStack, Image, IconButton, useToken,
-} from '@chakra-ui/react'
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import useScrubReveal from '../../hooks/useScrubReveal'
+import { useMemo, useRef } from 'react'
+import { Box } from '@chakra-ui/react'
+import { keyframes } from '@emotion/react'
+import { useInView } from 'framer-motion'
 import { playerData } from '../../data/playerData'
 import useSeasonStats from '../../hooks/useSeasonStats'
-import { seasonTitle } from '../../lib/seasonTiles'
-import { RadarStats } from './RadarStats.jsx'
+import { seasonTiles, seasonTitle } from '../../lib/seasonTiles'
+import ClubTimeline from '../Clubs/ClubTimeline'
 
-gsap.registerPlugin(ScrollTrigger)
+// Estadísticas "Radar central": el radar de atributos al centro con la media,
+// las cifras de la temporada a los lados y la ficha física en una franja abajo.
 
-// Cambiá a false para volver al diseño original (bento de 3 columnas)
-const USE_RADAR = true
+const EASE = 'cubic-bezier(0.23,1,0.32,1)'
+const c = (k) => `var(--chakra-colors-brand-${k})`
+const grow = keyframes`from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}`
+const rise = keyframes`from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}`
 
-function BioCard() {
-  const BIO = [
-  { label: 'Edad', key: 'age' },
-  { label: 'Altura', key: 'height' },
-  { label: 'Peso', key: 'weight' },
-  { label: 'Pie', key: 'foot' },
-  { label: 'Nacimiento', key: 'birthDate' },
-  { label: 'Lugar', key: 'birthPlace' },
-]
-  return (
-          <Box>
-            <Text
-                fontFamily="mono"
-                fontSize="11px"
-                letterSpacing="0.28em"
-                textTransform="uppercase"
-                color="brand.boneWarm"
-                mb={5}
-              >
-                Datos personales
-              </Text>
-            <Box
-              bg="brand.dark"
-              border="1px solid"
-              borderColor="brand.amber"
-              borderRadius={'10px'}
-              p={{ base: 5, md: 6 }}
-              h="90%"
-              position="relative"
-            >
-              <VStack align="stretch" spacing={3}>
-                {BIO.map((row) => (
-                  <Flex
-                    key={row.key}
-                    justify="space-between"
-                    align="center"
-                    borderBottom="1px solid"
-                    borderColor="whiteAlpha.50"
-                    pb={3}
-                    transition="all 0.3s ease"
-                    _hover={{ 
-                      borderColor: 'brand.brown',
-                      transform: 'translateY(-2px)',
-                    }}
-                  >
-                    <Text
-                      fontFamily="mono"
-                      fontSize="11px"
-                      letterSpacing="0.18em"
-                      textTransform="uppercase"
-                      color="whiteAlpha.600"
-                    >
-                      {row.label}
-                    </Text>
-                    <Text fontFamily="mono" fontSize="sm" fontWeight={500}>
-                      {playerData[row.key]}
-                    </Text>
-                  </Flex>
-                ))}
-              </VStack>
-            </Box>
-          </Box>
-
-  )
+// Geometría del radar (viewBox -100 -10 600 420)
+const C = 200, R = 140, MIN = 50
+const ang = (i, n) => -Math.PI / 2 + (i * 2 * Math.PI) / n
+const pt = (i, n, v) => {
+  const r = (R * (v - MIN)) / (100 - MIN)
+  return [C + r * Math.cos(ang(i, n)), C + r * Math.sin(ang(i, n))]
 }
+const poly = (n, f) => Array.from({ length: n }, (_, i) => pt(i, n, f(i)).map((x) => x.toFixed(1)).join(',')).join(' ')
 
-function SeasonCards() {
-  const cardRefs = useRef([])
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      cardRefs.current.forEach((el, i) => {
-        if (!el) return
-        gsap.fromTo(el,
-          { y: 28, opacity: 0 },
-          {
-            y: 0, opacity: 1,
-            scrollTrigger: { trigger: el, start: 'top 88%', once: true },
-            duration: 0.7, delay: i * 0.1, ease: 'power3.out',
-          }
+function Radar({ attrs, play }) {
+  const n = attrs.length
+  return (
+    <svg viewBox="-100 -10 600 420" role="img" aria-label={`Radar de atributos: ${attrs.map((a) => `${a.label} ${a.value}`).join(', ')}`}>
+      {[60, 70, 80, 90, 100].map((v) => (
+        <polygon key={v} points={poly(n, () => v)} fill="none" stroke={v === 100 ? '#d6ae4e66' : '#ffffff14'} />
+      ))}
+      <text className="scale" x={C + 4} y={pt(0, n, 100)[1] - 4}>100</text>
+      <text className="scale" x={C + 4} y={pt(0, n, 75)[1]}>75</text>
+      {attrs.map((_, i) => {
+        const [x, y] = pt(i, n, 100)
+        return <line key={i} x1={C} y1={C} x2={x} y2={y} stroke="#ffffff14" />
+      })}
+      <polygon
+        className={`poly${play ? ' play' : ''}`} points={poly(n, (i) => attrs[i].value)}
+        fill={c('amber')} fillOpacity=".9" stroke={c('amber')} strokeWidth="2"
+      />
+      {attrs.map((a, i) => {
+        const [x, y] = pt(i, n, 118)
+        const side = Math.abs(x - C) >= 5
+        const anchor = !side ? 'middle' : x > C ? 'start' : 'end'
+        // A los costados, los rótulos de varias palabras van en dos líneas para no salirse
+        const words = a.label.toUpperCase().split(' ')
+        const lines = side && words.length > 1 ? [words.slice(0, -1).join(' '), words.at(-1)] : [words.join(' ')]
+        const y0 = y - (lines.length - 1) * 8
+        return (
+          <g key={a.label}>
+            <text className="lbl" x={x} y={y0} textAnchor={anchor}>
+              {lines.map((l, k) => <tspan key={k} x={x} dy={k ? '1.15em' : 0}>{l}</tspan>)}
+              <tspan className="val" x={x} dy="1.25em">{a.value}</tspan>
+            </text>
+          </g>
         )
-      })
-    })
-    return () => ctx.revert()
-  }, [])
-
-  return (
-    <Box mx={2}>
-      <Text
-        fontFamily="mono"
-        fontSize="11px"
-        letterSpacing="0.28em"
-        textTransform="uppercase"
-        color="brand.boneWarm"
-        mb={5}
-      >
-        última temporada
-      </Text>
-      <Grid templateColumns="repeat(2, 1fr)" gap={3}>
-        {playerData.seasonStats.map((s, i) => (
-          <Box
-            key={s.label}
-            ref={(el) => (cardRefs.current[i] = el)}
-            border="1px solid"
-            borderColor="whiteAlpha.100"
-            borderRadius={'10px'}
-            p={5}
-            position="relative"
-            cursor="default"
-            transition="border-color 0.3s, background 0.3s"
-            _hover={{
-              borderColor: 'brand.brown',
-              bg: 'rgba(19, 67, 139, 0.05)',
-            }}
-            _before={{
-              content: '""', position: 'absolute', bottom: '0px', left: '10px',
-              w: '0', h: '2px', bg: 'brand.brown', borderRadius: 'full',
-              transition: 'width 0.35s',
-            }}
-            sx={{ '&:hover::before': { width: 'calc(100% - 20px)' } }}
-          >
-            <Text fontFamily="heading" fontSize="4xl" color="white" lineHeight={1} mb={1}>
-              {s.value}
-            </Text>
-            <Text fontFamily="mono" fontSize="10px" color="brand.gray"
-              textTransform="uppercase" letterSpacing="widest">
-              {s.label}
-            </Text>
-          </Box>
-        ))}
-      </Grid>
-    </Box>
-  )
-}
-
-function StatBars() {
-  const barRefs  = useRef([])
-  const numRefs  = useRef([])
-  const [accentDeep, accentMid] = useToken('colors', ['brand.accentDeep', 'brand.accentMid'])
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      playerData.stats.forEach((s, i) => {
-        const bar = barRefs.current[i]
-        const num = numRefs.current[i]
-        if (!bar) return
-        const obj = { val: 0 }
-        gsap.fromTo(
-          bar,
-          { scaleX: 0 },
-          {
-            scaleX: s.value / 100,
-            ease: 'power2.out',
-            scrollTrigger: { trigger: bar, start: 'top 88%', once: true },
-            duration: 1.2,
-            delay: i * 0.08,
-          }
-        )
-        gsap.to(obj, {
-          val: s.value,
-          ease: 'power2.out',
-          duration: 1.2,
-          delay: i * 0.08,
-          scrollTrigger: { trigger: bar, start: 'top 88%', once: true },
-          onUpdate() { if (num) num.textContent = Math.round(obj.val) },
-        })
-      })
-    })
-    return () => ctx.revert()
-  }, [])
-
-  return (
-    <Box>
-      <Text
-        fontFamily="mono"
-        fontSize="11px"
-        letterSpacing="0.28em"
-        textTransform="uppercase"
-        color="brand.boneWarm"
-        mb={5}
-      >
-        Hablidades
-      </Text>
-      <Box
-        border="1px solid"
-        borderColor="whiteAlpha.100"
-        borderRadius={'10px'}
-        p={6}
-        position="relative"
-        _before={{
-          content: '""', position: 'absolute', top: 0, left: 2,
-          w: '32px', h: '2px', bg: 'brand.brown',
-        }}
-      >
-        <VStack spacing={4} align="stretch">
-          {playerData.stats.map((s, i) => (
-            <Box key={s.label}>
-              <Flex justify="space-between" mb={1.5}>
-                <Text fontFamily="mono" fontSize="11px" color="white"
-                  textTransform="uppercase" letterSpacing="wider">
-                  {s.label}
-                </Text>
-                <Text ref={(el) => (numRefs.current[i] = el)}
-                  fontFamily="heading" fontSize="sm" color="brand.brownLight">
-                  0
-                </Text>
-              </Flex>
-              <Box h="3px" bg="rgba(255,255,255,0.08)" position="relative">
-                <Box
-                  ref={(el) => (barRefs.current[i] = el)}
-                  position="absolute"
-                  top={0} left={0}
-                  w="100%" h="100%"
-                  bg={`linear-gradient(to right, ${accentDeep}, ${accentMid})`}
-                  transformOrigin="left"
-                  transform="scaleX(0)"
-                />
-              </Box>
-            </Box>
-          ))}
-        </VStack>
-      </Box>
-    </Box>
-  )
-}
-
-function ClubNode({ club, isFirst, isLast, isActive }) {
-  const NODE_W = { base: '180px', md: '220px' }
-  const BADGE = '74px'
-
-  return (
-    <Box
-      w={NODE_W}
-      flexShrink={0}
-      scrollSnapAlign="center"
-      position="relative"
-      pt={8}
-    >
-      {/* Riel + nodo del escudo */}
-      <Flex h={BADGE} align="center" justify="center" position="relative">
-        {/* Línea conectora (segmento por club) */}
-        <Box
-          position="absolute"
-          top="50%"
-          left={isFirst ? '50%' : 0}
-          right={isLast ? '50%' : 0}
-          h="1px"
-          bg="brand.amber"
-          transform="translateY(-50%)"
-        />
-        {/* Tramo recorrido (resaltado hacia el club actual) */}
-        {isFirst && (
-          <Box
-            position="absolute"
-            top="50%"
-            left="50%"
-            right={0}
-            h="1px"
-            bgGradient="linear(to-r, brand.brown, transparent)"
-            transform="translateY(-50%)"
-          />
-        )}
-
-        {/* Escudo */}
-        <Flex
-          boxSize={BADGE}
-          borderRadius="full"
-          align="center"
-          justify="center"
-          position="relative"
-          zIndex={1}
-          bg="brand.brown"
-          border="1px solid"
-          borderColor={'brand.amber'}
-          boxShadow={isActive ? '0 0 0 4px #bda78e, 0 0 26px #bda78e79' : 'none'}
-          transition="border-color 0.35s, box-shadow 0.35s, transform 0.35s"
-          _groupHover={{
-            borderColor: 'brand.amberLight',
-            transform: 'translateY(-4px)',
-            boxShadow: '0 0 0 4px #bda78e9a, 0 0 26px #bda78e79',
-          }}
-        >
-          <Image
-            src={club.logo}
-            alt={`Escudo de ${club.name}`}
-            boxSize="46px"
-            objectFit="contain"
-            loading="lazy"
-            filter={isActive ? 'none' : 'saturate(0.85)'}
-            transition="filter 0.35s"
-          />
-        </Flex>
-      </Flex>
-
-      {/* Tarjeta */}
-      <Box
-        mt={5}
-        mx={2}
-        px={4}
-        pt={5}
-        pb={8}
-        bg="brand.dark"
-        border="1px solid"
-        borderColor="brand.amber"
-        borderRadius="lg"
-        textAlign="center"
-        position="relative"
-        transition="border-color 0.35s, transform 0.35s, background 0.35s"
-        _before={{
-          content: '""', position: 'absolute', top: 0, left: '50%',
-          transform: 'translateX(-50%)',
-          w: isActive ? '40px' : '0', h: '2px', bg: 'brand.amber', borderRadius: 'full',
-          transition: 'width 0.35s',
-        }}
-        _groupHover={{  
-          transform: 'translateY(-4px)',
-          bg: '#bda78e1a',
-          _before: { width: '40px' },
-        }}
-      >
-        <Text
-          fontFamily="mono"
-          fontSize="10px"
-          color={isActive ? 'brand.rec' : 'brand.bone'}
-          textTransform="uppercase"
-          letterSpacing="0.2em"
-          _groupHover={{ color: isActive ? 'brand.rec' : 'brand.rec' }}
-        >
-          {club.years}
-        </Text>
-        <Text fontFamily="heading" fontSize="xl" color="brand.bone" lineHeight={1.05} mt={1}>
-          {club.name}
-        </Text>
-        <Text
-          fontFamily="mono"
-          fontSize="10px"
-          color="brand.gray"
-          textTransform="uppercase"
-          letterSpacing="0.18em"
-          mt={1}
-        >
-          {club.country}
-        </Text>
-
-        {club.titles.length > 0 && (
-          <VStack spacing={1.5} mt={3}>
-            {club.titles.map((t) => (
-              <HStack key={t} spacing={1.5} justify="center">
-                
-                <Text fontFamily="mono" fontSize="9px" color="brand.dorado" letterSpacing="0.12em">
-                  🏆 {t}
-                </Text>
-              </HStack>
-            ))}
-          </VStack>
-        )}
-
-        {club.info && (
-          <VStack spacing={1} mt={3}>
-            {(Array.isArray(club.info) ? club.info : [club.info])
-              .filter(Boolean)
-              .map((line) => (
-                <Text
-                  key={line}
-                  fontFamily="mono"
-                  fontSize="10px"
-                  color="brand.gray"
-                  lineHeight={1.5}
-                >
-                  {line}
-                </Text>
-              ))}
-          </VStack>
-        )}
-      </Box>
-    </Box>
-  )
-}
-
-function ClubTimeline() {
-  const scrollRef = useRef(null)
-  const drag = useRef({ active: false, startX: 0, scrollLeft: 0, moved: false })
-
-  const scrollByDir = (dir) => {
-    scrollRef.current?.scrollBy({ left: dir * 300, behavior: 'smooth' })
-  }
-
-  const onDown = (e) => {
-    const el = scrollRef.current
-    if (!el) return
-    drag.current.active = true
-    drag.current.moved = false
-    drag.current.startX = (e.pageX ?? e.touches?.[0]?.pageX) - el.offsetLeft
-    drag.current.scrollLeft = el.scrollLeft
-    el.style.cursor = 'grabbing'
-  }
-  const onMove = (e) => {
-    const el = scrollRef.current
-    if (!drag.current.active || !el) return
-    const x = (e.pageX ?? e.touches?.[0]?.pageX) - el.offsetLeft
-    const delta = (x - drag.current.startX) * 1.15
-    if (Math.abs(delta) > 4) drag.current.moved = true
-    el.scrollLeft = drag.current.scrollLeft - delta
-  }
-  const onUp = () => {
-    drag.current.active = false
-    if (scrollRef.current) scrollRef.current.style.cursor = 'grab'
-  }
-
-  const arrowProps = {
-    variant: 'unstyled',
-    minW: '38px',
-    h: '38px',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 'full',
-    border: '1px solid',
-    borderColor: 'brand.amber',
-    color: 'brand.bone',
-    transition: 'all 0.25s',
-    _hover: { bg: 'brand.bgRef', color: 'brand.gray2' },
-    _active: { transform: 'scale(0.92)' },
-  }
-
-  return (
-    <Box mt={16}>
-      <Flex align="flex-end" justify="space-between" mb={7}>
-        <Box>
-          <Text fontFamily='"Shadows Into Light", cursive' fontSize="10px" color="brand.bone"
-                  textTransform="uppercase" letterSpacing="widest">
-            Trayectoria
-          </Text>
-          <Text as="h2" fontFamily="heading" fontWeight="bold" fontSize={{ base: '5xl', lg: '6xl' }}
-                  color="brand.amber" lineHeight={1}>
-            Clubes
-          </Text>
-        </Box>
-        <HStack spacing={2}>
-          <IconButton aria-label="Anterior" icon={<FiChevronLeft size={18} />}
-                      onClick={() => scrollByDir(-1)} {...arrowProps} />
-          <IconButton aria-label="Siguiente" icon={<FiChevronRight size={18} />}
-                      onClick={() => scrollByDir(1)} {...arrowProps} />
-        </HStack>
-      </Flex>
-
-      <Box
-        ref={scrollRef}
-        overflowX="auto"
-        cursor="grab"
-        pb={6}
-        sx={{
-          scrollSnapType: 'x mandatory',
-          scrollbarWidth: 'none',
-          '&::-webkit-scrollbar': { display: 'none' },
-        }}
-        onMouseDown={onDown}
-        onMouseMove={onMove}
-        onMouseUp={onUp}
-        onMouseLeave={onUp}
-        onTouchStart={onDown}
-        onTouchMove={onMove}
-        onTouchEnd={onUp}
-        onClickCapture={(e) => { if (drag.current.moved) { e.preventDefault(); e.stopPropagation() } }}
-      >
-        <HStack spacing={0} align="stretch" w="max-content" px={1}>
-          {playerData.clubs.map((club, i) => (
-            <Box key={club.name} role="group">
-              <ClubNode
-                club={club}
-                isFirst={i === 0}
-                isLast={i === playerData.clubs.length - 1}
-                isActive={i === 0}
-              />
-            </Box>
-          ))}
-        </HStack>
-      </Box>
-    </Box>
+      })}
+    </svg>
   )
 }
 
 export default function StatsSection() {
-  // Con totales de la API el título muestra sólo la temporada en curso.
+  // Con totales de la API se muestra la temporada en curso; si no, los fijos de playerData.
   const season = useSeasonStats()
-  const sectionRef = useRef(null)
-  const titleRef   = useRef(null)
+  const tiles = useMemo(() => (season ? seasonTiles(season) : playerData.seasonStats), [season])
+  const half = Math.ceil(tiles.length / 2)
+  const media = Math.round(playerData.stats.reduce((a, s) => a + s.value, 0) / playerData.stats.length)
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '0px 0px -25% 0px' })
 
-  useScrubReveal(sectionRef, {
-    elements: [
-      { ref: titleRef, fromVars: { y: 50, opacity: 0 }, vars: { y: 0, opacity: 1 } },
-    ],
-    start: 'top 80%',
-    end:   'top 40%',
-  })
+  const cell = (s, i) => (
+    <div key={s.label} className={`n${i === 0 ? ' hl' : ''}`}>
+      <b>{s.value}</b>
+      <small>{s.label}</small>
+    </div>
+  )
+  const pills = [
+    ['Posición', playerData.position],
+    ['Pie', playerData.foot],
+    ['Edad', `${playerData.age} años`],
+    ['Altura', playerData.height],
+    ['Peso', playerData.weight],
+    ['Origen', playerData.birthPlaceShort],
+  ]
 
   return (
-    <Box
-      as="section"
-      id="estadisticas"
-      ref={sectionRef}
-      bg="brand.dark"
-      pt={{ base: 16, lg: 20 }}
-      pb={{ base: 16, lg: 20 }}
-      px={{ base: 2, lg: 10 }}
-      borderTopLeftRadius={{ base: '14px', lg: '22px' }}
-      borderTopRightRadius={{ base: '14px', lg: '22px' }}
-      boxShadow="0 -24px 80px rgba(0,0,0,0.65)"
-    >
-      <Box maxW="1400px" mx="auto">
-        {/* Header */}
-        <Flex align="flex-end" justify="space-between" mb={10}>
-          <Box ref={titleRef}>
-            <Text fontFamily='"Shadows Into Light", cursive' fontSize="10px" color="brand.bone"
-                  textTransform="uppercase" letterSpacing="widest" >
-              {seasonTitle(season, 'Temporada 2025 / 2026')}
-            </Text>
-            <Text as="h2" fontFamily="heading" fontWeight="bold" fontSize={{ base: '5xl', lg: '6xl' }}
-                  color="brand.amber" lineHeight={1}>
-              Estadísticas
-            </Text>
-          </Box>
-        </Flex>
+    <Box as="section" id="estadisticas" ref={ref} className={inView ? 'in' : ''} sx={sx}>
+      <div className="sh rv">
+        <div className="k">{seasonTitle(season, 'Temporada 2025 / 2026')}</div>
+        <h2>Estadísticas</h2>
+      </div>
 
-        {/* Contenido: radar (nuevo) o bento de 3 columnas (original) */}
-        {USE_RADAR ? (
-          <RadarStats />
-        ) : (
-          <Grid
-            templateColumns={{ base: '1fr', md: '1fr 1fr', lg: '1fr 1.1fr 1fr' }}
-            gap={5}
-          >
-            <GridItem><BioCard /></GridItem>
-            <GridItem><SeasonCards /></GridItem>
-            <GridItem><StatBars /></GridItem>
-          </Grid>
-        )}
+      <div className="wrap">
+        <div className="side rv" style={{ animationDelay: '.15s' }}>{tiles.slice(0, half).map((s, i) => cell(s, i))}</div>
+        <div className="radar">
+          <Radar attrs={playerData.stats} play={inView} />
+          <div className="media"><b>{media}</b><small>MEDIA</small></div>
+        </div>
+        <div className="side r rv" style={{ animationDelay: '.25s' }}>{tiles.slice(half).map((s, i) => cell(s, i + half))}</div>
+      </div>
 
-        {/* Club timeline */}
-        <ClubTimeline />
-      </Box>
+      <dl className="pills rv" style={{ animationDelay: '.35s' }}>
+        {pills.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
+      </dl>
+
+      <ClubTimeline />
     </Box>
   )
+}
+
+const sx = {
+  position: 'relative', bg: 'brand.dark', color: 'brand.bone', fontFamily: 'display', overflow: 'hidden',
+  p: { base: '64px 20px', lg: '96px 60px' },
+  '& > *': { maxW: '1320px', mx: 'auto' },
+  '.rv': { opacity: 0 },
+  '&.in .rv': { animation: `${rise} 1s ${EASE} both` },
+  '.sh': { mb: { base: '28px', lg: '44px' } },
+  '.sh .k': { fontSize: '11px', fontWeight: 700, letterSpacing: '.28em', textTransform: 'uppercase', color: 'brand.terra' },
+  '.sh h2': { fontWeight: 700, fontSize: 'clamp(44px,5.4vw,84px)', lineHeight: 0.9, color: 'brand.amber', textTransform: 'uppercase', mt: '8px' },
+  '.wrap': { display: 'grid', gridTemplateColumns: '1fr minmax(320px,520px) 1fr', gap: '40px', alignItems: 'center' },
+  '.side': { display: 'grid', gap: '26px' },
+  '.side.r': { textAlign: 'right' },
+  '.n': { pb: '20px', borderBottom: '1px solid', borderColor: 'brand.line' },
+  '.side .n:last-child': { border: 0, pb: 0 },
+  '.n b': { display: 'block', fontSize: 'clamp(48px,5vw,78px)', fontWeight: 700, lineHeight: 0.9, fontVariantNumeric: 'tabular-nums' },
+  '.n small': { fontSize: '11px', letterSpacing: '.24em', color: 'brand.gray', textTransform: 'uppercase' },
+  '.n.hl b': { color: 'brand.terra' },
+  '.radar': { position: 'relative' },
+  '.radar svg': { w: '100%', h: 'auto', display: 'block', overflow: 'visible' },
+  '.poly': { transformOrigin: '200px 200px', opacity: 0 },
+  '.poly.play': { animation: `${grow} 1.2s ${EASE} both` },
+  '.media': { position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', textAlign: 'center', pointerEvents: 'none', color: 'brand.onAcc' },
+  '.media b': { display: 'block', fontSize: '64px', lineHeight: 0.85, fontWeight: 700, fontVariantNumeric: 'tabular-nums' },
+  '.media small': { fontSize: '10px', fontWeight: 700, letterSpacing: '.24em' },
+  '.lbl': { font: '700 11px Nippo, sans-serif', letterSpacing: '.12em', fill: '#e6dcc8' },
+  '.val': { font: '700 15px Nippo, sans-serif', fill: c('amber') },
+  '.scale': { font: '400 9px Nippo, sans-serif', fill: c('gray') },
+  '.pills': {
+    display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', mt: '56px', borderTop: '2px solid', borderColor: 'brand.amber',
+    background: `linear-gradient(180deg, ${c('bg2')}, transparent)`,
+  },
+  '.pills div': {
+    display: 'flex', flexDirection: 'column', gap: '8px', p: '20px 22px', borderLeft: '1px solid', borderColor: 'brand.line',
+  },
+  '.pills div:first-of-type': { borderLeft: 0 },
+  '.pills dt': { fontSize: '10px', fontWeight: 700, letterSpacing: '.24em', textTransform: 'uppercase', color: 'brand.gray' },
+  '.pills dd': { fontSize: '22px', letterSpacing: '.02em', color: 'brand.bone', fontWeight: 700 },
+  '.pills div:first-of-type dd': { color: 'brand.amber' },
+  '@media (max-width: 980px)': {
+    '.wrap': { gridTemplateColumns: '1fr 1fr', gap: '20px' },
+    '.radar': { gridColumn: '1/-1', gridRow: 1, maxW: '420px', m: '0 auto 10px', w: '100%' },
+    '.side.r': { textAlign: 'left' },
+    '.n b': { fontSize: '40px' },
+    '.lbl': { fontSize: '17px' },
+    '.val': { fontSize: '21px' },
+    '.pills': { gridTemplateColumns: 'repeat(2,1fr)', mt: '36px' },
+    '.pills div': { p: '14px 16px' },
+    '.pills div:nth-of-type(odd)': { borderLeft: 0 },
+    '.pills div:nth-of-type(n+3)': { borderTop: '1px solid', borderColor: 'brand.line' },
+    '.pills dd': { fontSize: '18px' },
+  },
+  '@media (prefers-reduced-motion: reduce)': {
+    '.rv, .poly': { opacity: 1, animation: 'none !important' },
+  },
 }
