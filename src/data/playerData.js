@@ -31,6 +31,8 @@ import image10 from '@assets/gallery/image10.webp'
 import image11 from '@assets/gallery/image11.webp'
 import image12 from '@assets/gallery/image12.webp'
 import image13 from '@assets/gallery/image13.webp'
+import image14 from '@assets/gallery/image14.webp'
+import image15 from '@assets/gallery/image15.webp'
 //Video
 import photoGraph from '@assets/perfil_video.webp'
 //Prensa
@@ -226,20 +228,24 @@ export const playerData = {
 
 
 
+  // Galería: c = categoría (clave de galleryCats), a = descripción para lectores de pantalla
+  galleryCats: [['all', 'Todas'], ['u', 'Cusco FC'], ['e', 'Entrenamiento']],
   gallery: [
-    { id: 1, src: image1, alt: 'Nicolas Silva', caption: 'Cusco FC', category: 'Partido', aspect: 'wide' },
-    { id: 2, src: image2, alt: 'Nicolas Silva', caption: 'Cusco FC',    category: 'Festejo', aspect: 'tall' },
-    { id: 3, src: image3, alt: 'Nicolas Silva', caption: 'Cusco FC', category: 'Entrenamiento', aspect: 'square' },
-    { id: 4, src: image4, alt: 'Nicolas Silva', caption: 'Cusco FC',     category: 'Partido', aspect: 'wide' },
-    { id: 5, src: image5, alt: 'Nicolas Silva', caption: 'Cusco FC',   category: 'Equipo',  aspect: 'wide' },
-    { id: 6, src: image6, alt: 'Nicolas Silva', caption: 'Cusco FC',       category: 'Retrato', aspect: 'tall' },
-    { id: 7, src: image7, alt: 'Nicolas Silva', caption: 'Cusco FC', category: 'Partido', aspect: 'wide' },
-    { id: 8, src: image8, alt: 'Nicolas Silva', caption: 'Cusco FC',     category: 'Partido', aspect: 'wide' },
-    { id: 9, src: image9, alt: 'Nicolas Silva', caption: 'Cusco FC', category: 'Partido', aspect: 'wide' },
-    { id: 10, src: image10, alt: 'Nicolas Silva', caption: 'Cusco FC',     category: 'Partido', aspect: 'wide' },
-    { id: 11, src: image11, alt: 'Nicolas Silva', caption: 'Cusco FC', category: 'Partido', aspect: 'wide' },
-    { id: 12, src: image12, alt: 'Nicolas Silva', caption: 'Cusco FC',     category: 'Partido', aspect: 'wide' },
-    { id: 13, src: image13, alt: 'Nicolas Silva', caption: 'Cusco FC', category: 'Partido', aspect: 'wide' },
+    { src: image3,  c: 'u', alt: 'Corre con la camiseta dorada de Cusco FC' },
+    { src: image7,  c: 'u', alt: 'Remata de zurda en el estadio de Cusco' },
+    { src: image9,  c: 'u', alt: 'Retrato con la cinta de capitán de Cusco FC' },
+    { src: image10, c: 'u', alt: 'De espaldas con el 26, saluda a la tribuna' },
+    { src: image1,  c: 'u', alt: 'Conduce la pelota ante la marca de un rival' },
+    { src: image2,  c: 'u', alt: 'El equipo de Cusco FC en la Copa Libertadores' },
+    { src: image4,  c: 'u', alt: 'Posa con un trofeo de campeón' },
+    { src: image5,  c: 'u', alt: 'Prepara el remate con la camiseta de Cusco FC' },
+    { src: image6,  c: 'u', alt: 'Formación de Cusco FC antes del partido' },
+    { src: image8,  c: 'u', alt: 'Prepara un centro desde la banda' },
+    { src: image13, c: 'u', alt: 'Avanza con la pelota junto a un compañero' },
+    { src: image11, c: 'e', alt: 'Trabajo con pelota en el entrenamiento' },
+    { src: image12, c: 'e', alt: 'Sonríe con el pulgar arriba en el entrenamiento' },
+    { src: image14, c: 'e', alt: 'Salto en un entrenamiento en la montaña' },
+    { src: image15, c: 'e', alt: 'Disputa la pelota en una práctica' },
   ],
 
   socialMedia: [
