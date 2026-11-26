@@ -25,6 +25,9 @@ function heroStats(season) {
 
 const hasScore = (m) => m.homeScore != null && m.awayScore != null
 
+// Espaciado vertical de mobile que se adapta al alto de pantalla (min px · n% del alto · max px)
+const sv = (min, n, max) => `clamp(${min}px, calc(${n} * var(--sv)), ${max}px)`
+
 function CtaButton({ solid, href, children }) {
   return (
     <chakra.a
@@ -37,7 +40,7 @@ function CtaButton({ solid, href, children }) {
       letterSpacing=".2em"
       textTransform="uppercase"
       p={{ base: '14px 10px', tab: '15px 24px' }}
-      borderRadius="full"
+      borderRadius="xl"
       border="1.5px solid"
       borderColor="brand.amber"
       bg={solid ? 'brand.amber' : 'transparent'}
@@ -56,16 +59,20 @@ function StarGauge({ attr }) {
   const enter = useEnter()
   const lit = Math.round(attr.value / 5)
   return (
-    <Box mt={{ base: '16px', tab: '26px' }} maxW="440px" {...enter(rise, 1, 0.54)}>
+    <Box
+      mt={{ base: sv(8, 1.6, 16), tab: '26px' }} maxW="440px" {...enter(rise, 1, 0.54)}
+      // En pantallas muy bajas se oculta: es lo menos importante del bloque
+      sx={{ '@media (max-width: 820px) and (max-height: 620px)': { display: 'none' } }}
+    >
       <Flex justify="space-between" align="baseline" fontSize="10px" letterSpacing=".24em" textTransform="uppercase" color="brand.gray">
         <Text as="span">{attr.label}</Text>
-        <Text as="b" fontSize={{ base: '24px', tab: '30px' }} letterSpacing={0} color="brand.bone">{attr.value}</Text>
+        <Text as="b" fontSize={{ base: '20px', tab: '30px' }} letterSpacing={0} color="brand.bone">{attr.value}</Text>
       </Flex>
-      <Grid mt="8px" templateColumns="repeat(20,1fr)" gap="3px" role="img" aria-label={`${attr.label}: ${attr.value} de 100`}>
+      <Grid mt={{ base: '6px', tab: '8px' }} templateColumns="repeat(20,1fr)" gap="3px" role="img" aria-label={`${attr.label}: ${attr.value} de 100`}>
         {Array.from({ length: 20 }, (_, i) => (
           <Box
             key={i}
-            h={{ base: '8px', tab: '10px' }}
+            h={{ base: '6px', tab: '10px' }}
             bg={i === lit - 1 ? 'brand.terra' : i < lit ? 'brand.amber' : 'brand.brownLight'}
             {...enter(seg, 0.5, 0.9 + i * 0.03)}
           />
@@ -78,14 +85,14 @@ function StarGauge({ attr }) {
 function SeasonFigures({ items }) {
   const enter = useEnter()
   return (
-    <Flex as="dl" mt={{ base: '16px', tab: '22px' }} maxW="440px" borderY="1px solid" borderColor="brand.line" {...enter(rise, 1, 0.62)}>
+    <Flex as="dl" mt={{ base: sv(8, 1.6, 16), tab: '22px' }} maxW="440px" borderY="1px solid" borderColor="brand.line" {...enter(rise, 1, 0.62)}>
       {items.map((s, i) => (
         <Flex
-          key={s.label} flex={1} direction="column" py="12px"
+          key={s.label} flex={1} direction="column" py={{ base: sv(6, 1.2, 12), tab: '12px' }}
           pl={i ? '18px' : 0} borderLeft={i ? '1px solid' : 0} borderColor="brand.line"
         >
           <Text as="dt" fontSize="9px" letterSpacing=".2em" textTransform="uppercase" color="brand.gray">{s.label}</Text>
-          <Text as="dd" fontSize={{ base: '20px', tab: '24px' }} fontWeight={700} color={i === 0 ? 'brand.terra' : 'brand.bone'} sx={{ fontVariantNumeric: 'tabular-nums' }}>
+          <Text as="dd" fontSize={{ base: '18px', tab: '24px' }} fontWeight={700} color={i === 0 ? 'brand.terra' : 'brand.bone'} sx={{ fontVariantNumeric: 'tabular-nums' }}>
             {s.value}
           </Text>
         </Flex>
@@ -144,16 +151,16 @@ function MatchCard({ last, next }) {
   const rows = [['Último', last], ['Próximo', next]]
   return (
     <Box
-      display={{ base: 'block', tab: 'none' }} mt="18px" bg="brand.bg2" border="1px solid" borderColor="brand.line"
+      display={{ base: 'block', tab: 'none' }} mt={sv(10, 1.8, 18)} bg="brand.bg2" border="1px solid" borderColor="brand.line"
       borderRadius="14px" overflow="hidden" {...enter(rise, 1, 0.7)}
     >
       {rows.map(([label, match], i) => (
         <Grid
-          key={label} templateColumns="70px 1fr auto" alignItems="center" gap="10px" px="16px" py="12px"
+          key={label} templateColumns="70px 1fr auto" alignItems="center" gap="10px" px="16px" py={sv(6, 1.2, 12)}
           borderTop={i ? '1px solid' : 0} borderColor="brand.line" fontSize="14px"
         >
           <Text as="span" {...matchLabel} color={i ? 'brand.amber' : 'brand.gray'}>{label}</Text>
-          <Fixture match={match} size="28px" />
+          <Fixture match={match} size="24px" />
           <Text as="span" fontSize="10px" letterSpacing=".08em" textTransform="uppercase" color="brand.gray">{match.date}</Text>
         </Grid>
       ))}
@@ -172,27 +179,27 @@ export default function Hero() {
   return (
     <Grid
       as="section" id="hero" aria-label="Presentación" position="relative" overflow="hidden"
-      h={{ base: 'auto', tab: 'calc(100 * var(--sv))' }} minH={{ base: 'calc(100 * var(--sv))', tab: '640px' }}
-      templateColumns={{ base: '1fr', tab: '.95fr 1.05fr' }} templateRows={{ base: '50vh auto', tab: 'auto' }}
+      h="calc(100 * var(--sv))" minH={{ base: '560px', tab: '640px' }}
+      templateColumns={{ base: '1fr', tab: '.95fr 1.05fr' }} templateRows={{ base: 'minmax(0, 1fr) auto', tab: 'auto' }}
       bg="brand.dark" color="brand.bone" fontFamily="display"
     >
       <Flex
         gridRow={{ base: 2, tab: 'auto' }} position="relative" zIndex={6} direction="column" justify="center"
-        p={{ base: '0 20px 28px', tab: '96px 32px 40px 60px' }}
+        p={{ base: `0 20px calc(${sv(14, 2.4, 24)} + env(safe-area-inset-bottom))`, tab: '96px 32px 40px 60px' }}
       >
         <Flex align="center" gap="14px" {...enter(rise, 1, 0.2)}>
-          <Image src={logoCurrentClub} alt={`Escudo de ${currentClub}`} boxSize={{ base: '40px', tab: '52px' }} objectFit="contain" />
+          <Image src={logoCurrentClub} alt={`Escudo de ${currentClub}`} boxSize={{ base: '32px', tab: '52px' }} objectFit="contain" />
           <Box>
-            <Text as="b" display="block" fontSize={{ base: '14px', tab: '18px' }} fontWeight={700} letterSpacing=".12em" textTransform="uppercase">{position}</Text>
+            <Text as="b" display="block" fontSize={{ base: '13px', tab: '18px' }} fontWeight={700} letterSpacing=".12em" textTransform="uppercase">{position}</Text>
             <Text as="span" display="block" mt="4px" fontSize={{ base: '9px', tab: '11px' }} letterSpacing=".2em" textTransform="uppercase" color="brand.gray">
               {currentClub} · {league}
             </Text>
           </Box>
         </Flex>
 
-        <Heading as="h1" mt={{ base: '14px', tab: '20px' }} fontFamily="display" fontWeight={700} textTransform="uppercase" lineHeight={0.86}>
-          <Text as="span" display="block" fontSize={{ base: '8vw', tab: 'clamp(30px,3.4vw,58px)' }} letterSpacing=".04em" {...enter(rise, 1, 0.3)}>{name}</Text>
-          <Text as="span" display="block" ml="-.04em" color="brand.amber" fontSize={{ base: '22vw', tab: 'clamp(84px,10.4vw,180px)' }} {...enter(rise, 1, 0.38)}>{fullName}</Text>
+        <Heading as="h1" mt={{ base: sv(6, 1.4, 14), tab: '20px' }} fontFamily="display" fontWeight={700} textTransform="uppercase" lineHeight={0.86}>
+          <Text as="span" display="block" fontSize={{ base: 'min(7vw, calc(3.6 * var(--sv)))', tab: 'clamp(30px,3.4vw,58px)' }} letterSpacing=".04em" {...enter(rise, 1, 0.3)}>{name}</Text>
+          <Text as="span" display="block" ml="-.04em" color="brand.amber" fontSize={{ base: 'min(20vw, calc(10 * var(--sv)))', tab: 'clamp(84px,10.4vw,180px)' }} {...enter(rise, 1, 0.38)}>{fullName}</Text>
         </Heading>
 
         <StarGauge attr={top} />
@@ -206,15 +213,15 @@ export default function Hero() {
         {matches.last && matches.next && <MatchCard last={matches.last} next={matches.next} />}
       </Flex>
 
-      <Box position="relative" gridRow={{ base: 1, tab: 'auto' }} minH={{ base: '400px', tab: 0 }} overflow={{ base: 'hidden', tab: 'visible' }}>
+      <Box position="relative" gridRow={{ base: 1, tab: 'auto' }} minH={0} overflow={{ base: 'hidden', tab: 'visible' }}>
         <Box
           position="absolute" left="50%" top="52%" w="120%" transform="translate(-50%,-50%)" borderRadius="50%" zIndex={0} sx={{ aspectRatio: '1' }}
           bg="radial-gradient(closest-side,#d6ae4e40,#d6ae4e10 55%,transparent 72%)"
         />
         <Box
-          aria-hidden="true" position="absolute" top="50%" left={{ base: '50%', tab: '44%' }} transform="translate(-50%,-54%)"
+          aria-hidden="true" position="absolute" top={{base:'60%', md:"50%"}} left={{ base: '50%', tab: '44%' }} transform="translate(-50%,-54%)"
           fontWeight={700} lineHeight={0.8} letterSpacing="-.04em" whiteSpace="nowrap" userSelect="none"
-          fontSize={{ base: 'min(52vh,102vw)', tab: 'min(100vh,50vw)' }} color="transparent"
+          fontSize={{ base: 'min(42vh,102vw)', tab: 'min(100vh,50vw)' }} color="transparent"
           bgImage={`url(${heroWide})`} bgSize="cover" bgPosition="50% 40%" bgClip="text"
           filter="grayscale(1) sepia(.7) brightness(.55) contrast(1.25)"
           sx={{ WebkitTextStroke: '2px var(--chakra-colors-brand-amber)' }}
@@ -224,7 +231,7 @@ export default function Hero() {
         </Box>
         <Image
           src={image} fetchpriority="high" alt={`${name} ${fullName}, ${position.toLowerCase()} de ${currentClub}`}
-          position="absolute" left="50%" bottom={{ base: '-8%', tab: 0 }} h={{ base: '94%', tab: '90%' }} w="auto" maxW="none" transform="translateX(-50%)" zIndex={4}
+          position="absolute" left="50%" bottom={{ base: '-12%', tab: 0 }} h={{ base: '94%', tab: '90%' }} w="auto" maxW="none" transform="translateX(-50%)" zIndex={4}
           filter="drop-shadow(0 30px 50px #000d)" {...enter(slide, 1.3, 0.35)}
         />
         <Box position="absolute" left={0} right={0} bottom={0} h="22%" zIndex={5} bgGradient="linear(to-b, transparent, var(--chakra-colors-brand-dark))" />

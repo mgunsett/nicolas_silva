@@ -1,8 +1,8 @@
 import { Box, Flex, Image, Link, Text, chakra } from '@chakra-ui/react'
-import { LiaLaptopCodeSolid } from 'react-icons/lia'
 import { playerData } from '../../data/playerData'
 import { EASE, fine } from '../../lib/motion'
 import { scrollToTop } from '../../lib/scroll'
+import sportfolioWeb from '../../../assets/logo_sport.png'
 
 // Footer "Firma": el apellido gigante a todo el ancho (las dos últimas letras en contorno),
 // con escudo, links de contacto y "Volver arriba" encima. Crédito del desarrollador al pie.
@@ -65,15 +65,14 @@ export default function Footer() {
         p={{ base: '16px 20px 20px', tab: '18px 60px 22px' }} mx={{ base: '-20px', tab: '-60px' }} borderTop="2px solid" borderColor="brand.amber"
       >
         <Text fontSize="12px" letterSpacing=".12em" textTransform="uppercase" textAlign="center">© {new Date().getFullYear()} {name} {fullName} · Todos los derechos reservados</Text>
-        <Text fontSize="12px" letterSpacing=".05em" color="brand.bone">
-          Desarrollo Web -{' '}
-          <Link
-            href="https://matiasgunsett.netlify.app/" isExternal color="dev.green" fontSize="18px" fontFamily='"Shadows Into Light", cursive' ml="2px" transition="color .3s"
-            _hover={{ textDecoration: 'none' }} sx={fine({ color: 'rgba(232,213,163,0.5)' })}
-          >
-            Matias Gunsett <Box as={LiaLaptopCodeSolid} display="inline-block" verticalAlign="middle" fontSize="20px" color="dev.cream" ml="2px" aria-hidden="true" />
-          </Link>
-        </Text>
+        <Flex direction="column" gap="3px" fontFamily="mono" fontSize="11px" fontWeight={500} letterSpacing="0.08em"
+                textTransform="uppercase" color="whiteAlpha.400">
+            Desarrollo web
+            <Link href="https://matiasgunsett.netlify.app/sportfolio" isExternal _focusVisible={focus}
+                  opacity={0.85} transition="opacity .25s" _hover={{ opacity: 1 }} textDecoration="none" aria-label="Sportfolio Web. Se abre en una pestaña nueva">
+              <Image src={sportfolioWeb} alt="Sportfolio Web" display="block" w="85px" h="auto" />
+            </Link>
+          </Flex>
       </Flex>
     </Box>
   )

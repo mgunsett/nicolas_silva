@@ -39,7 +39,7 @@ function ContactCard({ card, index, rv }) {
       <Box>
         <Text fontSize="11px" fontWeight={700} letterSpacing=".22em" textTransform="uppercase" color={highlight ? 'brand.onAcc' : 'brand.terra'} opacity={highlight ? 0.7 : 1}>{role}</Text>
         <Heading as="h3" mt="8px" fontFamily="display" fontWeight={700} fontSize="clamp(26px,2.6vw,40px)" textTransform="uppercase" lineHeight={1}>{name}</Heading>
-        <Text mt="8px" fontSize="14px" opacity={0.75}>{handle}{extra ? ` · ${extra}` : ''}</Text>
+        <Text mt="8px" fontSize="14px" opacity={0.75}>{handle}{extra ? ` ${extra}` : ''}</Text>
       </Box>
     </Link>
   )
@@ -54,9 +54,9 @@ export default function ContactSection() {
 
   const cards = [
     ig && { role: `Directo con ${name[0]}${name.slice(1).toLowerCase()}`, name: 'Instagram', handle: ig.handle, url: ig.url, icon: <FaInstagram aria-hidden="true" /> },
-    tm && { role: 'Ficha profesional', name: 'Transfermarkt', handle: 'Trayectoria y valor de mercado', url: tm.url, img: tm.image },
-    rep && { role: 'Representante deportivo', name: rep.label, handle: rep.handle, extra: 'Clubes y transferencias', url: rep.url, img: rep.image, highlight: true },
-    mkt && { role: 'Contacto de marketing', name: mkt.label, handle: mkt.handle, extra: 'Marcas y acciones comerciales', url: mkt.url, img: mkt.image },
+    tm && { role: 'Ficha profesional', name: 'Transfermarkt', handle: 'Estadísticas', url: tm.url, img: tm.image },
+    rep && { role: 'Representante deportivo', name: rep.label, handle: rep.handle, extra: ' ', url: rep.url, img: rep.image, highlight: true },
+    mkt && { role: 'Contacto de marketing', name: mkt.label, handle: mkt.handle, extra: ' ', url: mkt.url, img: mkt.image },
   ].filter(Boolean)
 
   return (

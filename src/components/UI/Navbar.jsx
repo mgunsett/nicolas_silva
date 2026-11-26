@@ -124,13 +124,10 @@ export default function Navbar() {
           <Box
             as="span" position="relative" w="40px" h="40px" borderRadius="full" bg="brand.amber" color="brand.onAcc"
             display="grid" placeItems="center" fontWeight={700} fontSize="18px"
-            _after={{ content: '""', position: 'absolute', right: '-1px', bottom: '-1px', w: '12px', h: '12px', borderRadius: 'full', bg: 'brand.terra', border: '2px solid', borderColor: 'brand.bone' }}
           >
-            {playerData.number}
+            NS
           </Box>
-          <Box as="b" fontWeight={700} fontSize="14px" letterSpacing=".08em" textTransform="uppercase" color="brand.amber">
-            {playerData.fullName} <Box as="span" color="brand.gray" fontWeight={400}>· {playerData.positionShort}</Box>
-          </Box>
+          
         </A>
 
         <Box ref={linksRef} position="relative" display={{ base: 'none', lg: 'flex' }}>

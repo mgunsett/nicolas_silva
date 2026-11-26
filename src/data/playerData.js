@@ -182,12 +182,12 @@ export const playerData = {
     },
   ],
 
-  // Highlight principal (YouTube). La portada sale de YouTube; si no carga, se usa `cover`.
+  // Highlight principal (YouTube). La portada es `cover`; sin `cover` se usa la miniatura de YouTube.
   featuredVideo: {
     youtubeId: 'XTF0C7YeP1s',
     title: 'Jugadas destacadas',
     subtitle: 'Cusco FC · Liga 1 Perú',
-    cover: image4,
+    cover: image1,
   },
 
   videos: [
