@@ -20,7 +20,8 @@ const PlayIcon = (props) => (
 
 function FeaturedVideo({ video }) {
   const [playing, setPlaying] = useState(false)
-  const [poster, setPoster] = useState(`https://i.ytimg.com/vi/${video.youtubeId}/maxresdefault.jpg`)
+  const ytThumb = `https://i.ytimg.com/vi/${video.youtubeId}/maxresdefault.jpg`
+  const [poster, setPoster] = useState(video.cover || ytThumb)
   const name = `${playerData.name} ${playerData.fullName}`
 
   return (
@@ -42,9 +43,11 @@ function FeaturedVideo({ video }) {
         >
           <Image
             data-zoom src={poster} alt="" loading="lazy" position="absolute" inset={0} w="100%" h="100%" objectFit="cover" maxW="none"
+            // Encuadre cargado hacia arriba para que se vean las caras
+            objectPosition="center 35%"
             transition={`transform 1.2s ${EASE}`}
-            // maxres no existe en todos los videos; si falla, la foto local
-            onError={() => setPoster(video.cover)}
+            // Si la portada local falla, se usa la miniatura de YouTube
+            onError={() => poster !== ytThumb && setPoster(ytThumb)}
           />
           <Box
             position="absolute" inset={0}
@@ -59,7 +62,7 @@ function FeaturedVideo({ video }) {
           </Box>
           <Flex position="absolute" left={{ base: '18px', tab: '40px' }} right={{ base: '18px', tab: '40px' }} bottom={{ base: '16px', tab: '34px' }} direction="column">
             <Flex as="span" align="center" gap="8px" fontSize={{ base: '9px', tab: '11px' }} fontWeight={700} letterSpacing=".26em" textTransform="uppercase" color="brand.amber">
-              <Box as={FaYoutube} color="brand.terra" fontSize="1.4em" aria-hidden="true" /> Highlight principal
+              <Box as={FaYoutube} color="brand.terra" fontSize="1.4em" aria-hidden="true" /> Highlights
             </Flex>
             <Text as="span" mt="8px" fontSize={{ base: '28px', md: '44px', tab: '64px' }} fontWeight={700} lineHeight={0.9} textTransform="uppercase" color="brand.bone">{video.title}</Text>
             <Text as="span" mt="10px" fontSize={{ base: '10px', tab: '12px' }} letterSpacing=".2em" textTransform="uppercase" color="brand.gray">{video.subtitle}</Text>
