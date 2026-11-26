@@ -5,7 +5,6 @@ import { useInView } from 'framer-motion'
 import { playerData } from '../../data/playerData'
 import useSeasonStats from '../../hooks/useSeasonStats'
 import { seasonTiles, seasonTitle } from '../../lib/seasonTiles'
-import ClubTimeline from '../Clubs/ClubTimeline'
 
 // Estadísticas "Radar central": el radar de atributos al centro con la media,
 // las cifras de la temporada a los lados y la ficha física en una franja abajo.
@@ -106,7 +105,6 @@ export default function StatsSection() {
         {pills.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
       </dl>
 
-      <ClubTimeline />
     </Box>
   )
 }

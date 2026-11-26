@@ -3,6 +3,7 @@ import { Box } from '@chakra-ui/react'
 import Navbar from './components/UI/Navbar'
 import Hero from './components/Hero/Hero'
 import StatsSection from './components/Stats/StatsSection'
+import ClubsSection from './components/Clubs/ClubsSection'
 import VideosSection from './components/Videos/VideosSection'
 import GallerySection from './components/Gallery/GallerySection'
 import ContactSection from './components/Contact/ContactSection'
@@ -15,6 +16,7 @@ function Landing() {
       <Navbar />
       <Hero />
       <StatsSection />
+      <ClubsSection />
       <VideosSection />
       <GallerySection />
       <ContactSection />
