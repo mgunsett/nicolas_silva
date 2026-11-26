@@ -1,3 +1,12 @@
+@font-face{font-family:Nippo;font-weight:300;font-display:swap;src:url('@assets/fonts/Nippo-Light.woff2') format('woff2')}
+@font-face{font-family:Nippo;font-weight:400;font-display:swap;src:url('@assets/fonts/Nippo-Regular.woff2') format('woff2')}
+@font-face{font-family:Nippo;font-weight:500;font-display:swap;src:url('@assets/fonts/Nippo-Medium.woff2') format('woff2')}
+@font-face{font-family:Nippo;font-weight:700;font-display:swap;src:url('@assets/fonts/Nippo-Bold.woff2') format('woff2')}
+
+/* Alto de pantalla estable en mobile (no salta con la barra del navegador) */
+:root{--sv:1vh}
+@supports (height:1svh){:root{--sv:1svh}}
+
 
 
 @keyframes float {

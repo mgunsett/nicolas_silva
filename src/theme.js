@@ -2,26 +2,32 @@ import { extendTheme } from '@chakra-ui/react'
 
 // Paleta de marca — fuente única de verdad para los colores del proyecto
 const brand = {
-  brown:      '#141516', // negro base (escudo Cusco FC)
-  brownDark:  '#000000', // negro profundo
-  brownLight: '#3A362C', // negro cálido/verdoso (sombra dorada)
-  amber:      '#C6A24A', // dorado principal (escudo/camiseta)
-  amber2:     '#c6a24a8e',
-  amberDark:  '#8A6E2A', // dorado oscuro
-  amberLight: '#c6a24a4f', // dorado claro translúcido
-  dorado:     '#D4B45A', // dorado camiseta (más luminoso)
-  orange:     '#B8862F', // dorado-ámbar (hover de botones)
-  orangeDark: '#8A6522', // dorado-ámbar oscuro (hover de botones)
-  orangeLight:'#D9A94A', // dorado-ámbar claro (hover de botones)
-  dark:       '#2324249f',//'#532626', // fondo oscuro (mantener)
-  dark3:      '#232424a1',
-  dark2:      '#a5a4a4',
-  gray:       '#9C8F6E', // grisáceo cálido dorado (texto secundario)
-  gray2:      '#6E5A2E', // ámbar apagado
-  bone:       '#FFFFFF', // blanco (texto principal)
-  boneWarm:   '#E5CE8A', // dorado claro (detalles)
+  // Paleta "Oro y piedra": negro cálido, oro y terracota
+  brown:      '#0F0D0A', // negro cálido base
+  brownDark:  '#070605', // negro profundo
+  brownLight: '#2A251C', // piedra oscura
+  amber:      '#D6AE4E', // oro principal
+  amber2:     '#d6ae4e8e',
+  amberDark:  '#9C7A2C', // oro oscuro
+  amberLight: '#d6ae4e40', // oro translúcido (líneas)
+  dorado:     '#D6AE4E', // oro (acento)
+  orange:     '#D2603F', // terracota (segundo acento)
+  orangeDark: '#A84A30',
+  orangeLight:'#E07A5C',
+  dark:       '#0F0D0A', // fondo
+  dark3:      '#1a1712d9', // superficie translúcida
+  dark2:      '#A39A86',
+  bg2:        '#1A1712', // superficie
+  deep:       '#070605',
+  terra:      '#D2603F', // terracota
+  line:       '#d6ae4e40', // líneas finas
+  onAcc:      '#0F0D0A', // texto sobre oro
+  gray:       '#A39A86', // texto secundario
+  gray2:      '#6E6556',
+  bone:       '#F4EDE0', // texto principal
+  boneWarm:   '#E5CE8A', // oro claro (detalles)
   rec:        '#E5484D', // rojo del indicador REC
-  bgRef:      '#bda78e1a'// bg de hover en cajas (mantener)
+  bgRef:      '#d6ae4e14'// fondo de hover en cajas
 }
 
 // Colores de la firma del desarrollador (crédito en el footer)
@@ -33,6 +39,7 @@ const dev = {
 const theme = extendTheme({
   colors: { brand, dev },
   fonts: {
+    display:   `'Nippo', system-ui, sans-serif`,
     heading:   `'Bebas Neue', sans-serif`,
     body:      `'Barlow', sans-serif`,
     mono:      `'Barlow Condensed', sans-serif`,
@@ -41,12 +48,12 @@ const theme = extendTheme({
     global: {
       'html, body': {
         bg: brand.dark,
-        color: 'white',
+        color: brand.bone,
         overflowX: 'hidden',
       },
       '::-webkit-scrollbar': { width: '4px' },
       '::-webkit-scrollbar-track': { bg: brand.dark },
-      '::-webkit-scrollbar-thumb': { bg: brand.accent, borderRadius: '2px' },
+      '::-webkit-scrollbar-thumb': { bg: brand.amber, borderRadius: '2px' },
     },
   },
   config: {

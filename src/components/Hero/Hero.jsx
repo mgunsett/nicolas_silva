@@ -1,298 +1,202 @@
-import { useRef, useEffect } from 'react'
-import { Box, Text, Flex, VStack, HStack, Image, useToken } from '@chakra-ui/react'
-import { motion } from 'framer-motion'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import MatchBox from './MatchBox'
+import { useMemo } from 'react'
+import { Box } from '@chakra-ui/react'
+import { keyframes } from '@emotion/react'
 import { playerData } from '../../data/playerData'
 import useMatches from '../../hooks/useMatches'
-import heroBg from '@assets/polaco3.webp'
-import '../../styles/globals.css'
+import useSeasonStats from '../../hooks/useSeasonStats'
+import { seasonTiles } from '../../lib/seasonTiles'
 
-gsap.registerPlugin(ScrollTrigger)
+// Hero "Split en capas": texto a la izquierda; a la derecha una escena en profundidad.
+// Atrás el dorsal gigante relleno con una foto de cancha; adelante, el recorte del jugador.
 
-const MotionBox = motion(Box)
+const EASE = 'cubic-bezier(0.23,1,0.32,1)'
+const c = (k) => `var(--chakra-colors-brand-${k})`
 
-function PlayerPanel() {
-  const [amber] = useToken('colors', ['brand.amber'])
+const rv  = keyframes`from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}`
+const seg = keyframes`from{opacity:0;transform:scaleY(.2)}`
+const num = keyframes`from{opacity:0;transform:translate(-50%,-48%) scale(1.08)}`
+const pl  = keyframes`from{opacity:0;transform:translateX(-10%)}`
+
+// Tres cifras de la temporada: partidos (destacado), asistencias y valoración
+const PICK = ['Partidos', 'Asistencias', 'Valoración']
+function heroStats(season) {
+  const tiles = season ? seasonTiles(season) : playerData.seasonStats
+  const pickd = PICK.map((l) => tiles.find((t) => t.label === l)).filter(Boolean)
+  return pickd.concat(tiles.filter((t) => !pickd.includes(t))).slice(0, 3)
+}
+
+const score = (m) => (m.homeScore ?? null) !== null && (m.awayScore ?? null) !== null
+
+export default function Hero() {
+  const season = useSeasonStats()
+  const { matches } = useMatches()
+  const stats = useMemo(() => heroStats(season), [season])
+  const top = useMemo(() => [...playerData.stats].sort((a, b) => b.value - a.value)[0], [])
+  const lit = Math.round(top.value / 5)
+  const { last, next } = matches
+
+  const d = (s) => ({ animationDelay: `${s}s` })
+
   return (
-    <Flex
-    direction={{base:'column', md:'row'}}
-    justifyContent={'flex-start'}
-    alignItems={'flex-start'}
-    gap={{base:4,md:4}}
-    fontFamily='"Shadows Into Light", cursive'
-    > 
-      <Box w={{base:'120px',md:"1px"}} h={{base:"1px", md: "70px", lg: "90px"}} bg="brand.amber" />
-      <Flex direction={'column'} justifyContent={'flex-start'} gap={1}>
-        <Flex gap={1} justifyContent='flex-start' alignItems='center'>
-          <Text  fontSize={{base:'9px',md:"10px"}} color="brand.bone"
-            textTransform="uppercase" letterSpacing="widest">
-            Posición
-          </Text>
-          <Text  fontSize={{base:'9px',md:"12px"}} color="brand.amber"
-            fontWeight="700" textTransform="uppercase" letterSpacing="widest">
-            {playerData.position}
-          </Text>
-        </Flex>
-        <Flex justifyContent='flex-start' alignItems='center' gap={{base:'10px',md:'14px'}}>
-          <Image src={playerData.nationalityFlag} w={{ base: '15px', md: '25px' }} />
-          <Text mb={'-5px'} ffontSize={{base:'xs',md:"md"}} color="brand.amber" letterSpacing="wider">
-            {playerData.nationality}
-          </Text>
-        </Flex>
-        <Flex justifyContent='flex-start' alignItems={'flex-end'} gap={{base:'8px',md:'10px'}} spacing={1} mt={'3px'} ml={-1}>
-          <Image src={playerData.logoCurrentClub} ml={{base:'2px',md:'none'}} w={{ base: '20px', md: '30px' }} h={{base:'20px',md:'30px'}} />
-          <Text  fontSize={{base:'xs',md:"md"}} color="brand.amber" letterSpacing="wider">
-            {playerData.currentClub}
-          </Text>
-        </Flex>
-      </Flex>
-    </Flex>
+    <Box as="section" id="hero" aria-label="Presentación" sx={sx}>
+      <div className="txt">
+        <div className="club rv" style={d(.2)}>
+          <img src={playerData.logoCurrentClub} alt={`Escudo de ${playerData.currentClub}`} width="52" height="52" />
+          <div>
+            <b>{playerData.position}</b>
+            <span>{playerData.currentClub} · {playerData.league}</span>
+          </div>
+        </div>
+
+        <h1>
+          <span className="n1 rv" style={d(.3)}>{playerData.name}</span>
+          <span className="n2 rv" style={d(.38)}>{playerData.fullName}</span>
+        </h1>
+
+        <div className="gauge rv" style={d(.54)}>
+          <div className="hd"><span>{top.label}</span><b>{top.value}</b></div>
+          <div className="bar" role="img" aria-label={`${top.label}: ${top.value} de 100`}>
+            {Array.from({ length: 20 }, (_, i) => (
+              <span key={i} className={i < lit ? 'on' : ''} style={{ animationDelay: `${0.9 + i * 0.03}s` }} />
+            ))}
+          </div>
+        </div>
+
+        <dl className="stats rv" style={d(.62)}>
+          {stats.map((s, i) => (
+            <div key={s.label} className={i === 0 ? 'hl' : ''}>
+              <dd>{s.value}</dd>
+              <dt>{s.label}</dt>
+            </div>
+          ))}
+        </dl>
+
+        <div className="ctas rv" style={d(.7)}>
+          <a className="btn solid" href="#videos" onClick={go('#videos')}>Ver jugadas</a>
+          <a className="btn" href="#contact" onClick={go('#contact')}>Contacto</a>
+        </div>
+      </div>
+
+      <div className="scene" style={{ '--ph': `url(${playerData.heroWide})` }}>
+        <div className="glow" />
+        <div className="num" aria-hidden="true">{playerData.number}</div>
+        <img
+          className="pl" src={playerData.image} fetchpriority="high"
+          alt={`${playerData.name} ${playerData.fullName}, ${playerData.position.toLowerCase()} de ${playerData.currentClub}`}
+        />
+        <div className="fade" />
+        {last && next && (
+          <div className="mt rv" style={d(1)}>
+            <span>
+              <small>Último</small>
+              {last.home.name} {score(last) ? <em>{last.homeScore}-{last.awayScore}</em> : 'vs'} {last.away.name}
+            </span>
+            <i />
+            <span><small>Próximo</small>{next.home.name} vs {next.away.name} · {next.date}</span>
+          </div>
+        )}
+      </div>
+    </Box>
   )
 }
 
-export default function Hero() {
-  const outerRef     = useRef(null)
-  const containerRef = useRef(null)
-  const photoRef     = useRef(null)
-  const line1Ref     = useRef(null)
-  const line2Ref     = useRef(null)
-  const vignetteRef  = useRef(null)
-  const { matches }  = useMatches()
-  const [amber, bgRef] = useToken('colors', ['brand.amber', 'brand.bgRef'])
+function go(href) {
+  return (e) => {
+    const t = document.querySelector(href)
+    if (!t) return
+    e.preventDefault()
+    if (window.__lenis) window.__lenis.scrollTo(t, { offset: -20 })
+    else t.scrollIntoView({ behavior: 'smooth' })
+  }
+}
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo([line1Ref.current, line2Ref.current],
-        { yPercent: 110, opacity: 0 },
-        { yPercent: 0, opacity: 1, duration: 1.1, stagger: 0.08, ease: 'expo.out', delay: 0.4 }
-      )
-      gsap.fromTo(photoRef.current,
-        { clipPath: 'inset(100% 0 0 0)', opacity: 0 },
-        { clipPath: 'inset(0% 0 0 0)', opacity: 1, duration: 1.5, ease: 'power3.out', delay: 0.6 }
-      )
-    }, containerRef)
-    return () => ctx.revert()
-  }, [])
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(vignetteRef.current,
-        { opacity: 0.15 },
-        {
-          opacity: 0.75,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: outerRef.current,
-            start: 'top top',
-            end: '+=80vh',
-            scrub: 1.2,
-          },
-        }
-      )
-    }, outerRef)
-    return () => ctx.revert()
-  }, [])
-
-  return (
-    <Box ref={outerRef} h="200vh" position="relative" zIndex={1} id= 'hero'>
-      <Box
-        ref={containerRef}
-        position="sticky"
-        top={0}
-        h="100vh"
-        overflow="hidden"
-        bg="brand.dark"
-        sx={{
-          maskImage: 'linear-gradient(black 90%, transparent)',
-          WebkitMaskImage: 'linear-gradient(black 90%, transparent)',
-          // dvh evita el salto al colapsar la barra del navegador en mobile; vh queda de fallback
-          '@supports (height: 100dvh)': { height: '100dvh' },
-        }}
-      >
-        {/* Foto de fondo — fundida con el fondo */}
-        <Box
-          position="absolute"
-          inset={0}
-          zIndex={0}
-          pointerEvents="none"
-          display="flex"
-          justifyContent="center"
-          alignItems={{ base: 'flex-end', md: 'flex-start' }}
-          mt={{ base: 20, md: 12 }}
-          ml={{ base: '0%', md: '4%' }}
-          sx={{
-            maskImage:
-              'radial-gradient(120% 90% at 50% 30%, black 35%, transparent 78%)',
-            WebkitMaskImage:
-              'radial-gradient(120% 90% at 50% 30%, black 35%, transparent 78%)',
-          }}
-        >
-          <Image
-            src={heroBg}
-            alt=""
-            aria-hidden="true"
-            draggable={false}
-            // Controlá el tamaño acá 👇
-            w={{ base: '100vw', md: '82vw' }}
-            h={{ base: '90vh', md: 'auto' }}
-            objectFit={{ base: 'cover', md: 'contain' }}
-            objectPosition={{ base: 'center', md: 'center top' }}
-            opacity={{ base: 0.21, lg: 0.20 }}
-            filter="grayscale(100%) contrast(1.05)"
-            sx={{ mixBlendMode: 'luminosity' }}
-          />
-        </Box>
-        
-        {/* Player photo */}
-        <Box
-          className="player-photo-container"
-          position="absolute"
-          inset={0}
-          zIndex={{base: 3, md: 5,  lg:9}}
-          pl={{ base: '25%', lg: '10%' }}
-          pt={{ base: '23%', lg: '5%' }}
-          display="flex"
-          justifyContent={{ base: 'flex-start', lg: 'flex-start' }}
-          alignItems={{ base: 'flex-start', lg: 'flex-start' }}
-          pointerEvents="none"
-        >
-          <Box
-            ref={photoRef}
-            h={{ base: '87vh', lg: '90vh' }}                               
-            style={{ clipPath: 'inset(100% 0 0 0)', opacity: 0 }}
-          >
-            <Image
-              className="player-photo"
-              src={playerData.image}
-              alt={`${playerData.displayName}, ${playerData.position.toLowerCase()} profesional de ${playerData.currentClub}`}
-              h={{ base: '100%', lg: '100%' }}
-              w={{ base: '80vw', lg: '30vw' }}
-              objectFit="contain"
-              objectPosition="bottom center"
-              draggable={false}
-            />
-          </Box>
-        </Box>
-
-        {/* Visible name text */}
-        <Box
-          position="absolute"
-          inset={0}
-          zIndex={2}
-          pointerEvents="none"
-          display="flex"
-          flexDir="column"
-          alignItems='center'
-          justifyContent={{ base: 'flex-start', md: 'center' }}
-          pl={{ base: 0, lg: '16%' }}
-          pt={{ base: '30%', lg: '0%' }}
-          mt={{ base: '0', lg: '-4%' }}
-        >
-          <Flex 
-          direction="column" 
-          as="h1" 
-          overflow="hidden"
-          >
-            <Flex
-              direction='row'
-              alignItems={{ base: 'flex-start', md: 'flex-start' }}
-              justifyContent={{ base: 'center', md: 'flex-start' }}
-              gap={{ base: 2, md: 2 }}
-            >
-              <Text
-                ref={line2Ref}
-                as="span"
-                display="block"
-                fontFamily='"Shadows Into Light", cursive'
-                fontSize={{ base: '29vw', md: '16vw', lg: '13vw' }}
-                letterSpacing="2px"
-                color="transparent"
-                lineHeight={0.9}
-                style={{ opacity: 0 }}
-                sx={{ WebkitTextStroke: `2px ${amber}` }}
-              >
-                {playerData.fullName}
-              </Text>
-              <Text
-                className="player-number"
-                fontFamily='"Shadows Into Light", cursive'
-                fontSize={{ base: '30vw', md: '16vw', lg: '13vw' }}
-                ml={{ base: '5px', md: 0 }}
-                lineHeight={0.9}
-                color="brand.boneWarm"
-                // sx={{ WebkitTextStroke: `2px #e7e5e591` }}
-              >
-                {playerData.number}
-              </Text>
-            </Flex>
-            <Text
-              ref={line1Ref} 
-              className="player-name"
-              as="span"
-              display="block"
-              fontFamily='"Shadows Into Light", cursive'
-              fontSize={{ base: '20vw', md: '16vw', lg: '13vw' }}
-              color="brand.amberDark"
-              lineHeight={0.9}
-              style={{ opacity: 0 }}
-              mt={{ base: '-10px', md: '-20px', lg: '-30px' }}
-            >
-              {playerData.name}
-            </Text>
-            
-          </Flex>
-        </Box>
-        {/* Player info — bottom left */}
-        <Box
-          className="player-info"
-          position="absolute"
-          bottom={{ base: 'auto', lg: '20%' }}
-          left={{ base: '5%', lg: '39%' }}
-          top={{ base: '44%', lg: 'auto' }}
-          zIndex={15}
-        >
-          <PlayerPanel />
-        </Box>
-
-        {/* MatchBox desktop */}
-        <Box
-          position="absolute"
-          bottom="12%"
-          right={0}
-          top={{ base: 'auto', lg: '20%' }}
-          zIndex={10}
-          display={{ base: 'none', lg: 'block' }}
-        >
-          <MatchBox last={matches.last} next={matches.next} variant="card" />
-        </Box>
-
-        {/* MatchBox mobile */}
-        <Box
-          position="absolute"
-          bottom={{base:"30px",md:"40px"}}
-          left={0}
-          right={0}
-          zIndex={15}
-          display={{ base: 'block', lg: 'none' }}
-        >
-          <MatchBox last={matches.last} next={matches.next} variant="strip" />
-        </Box>
-
-
-
-        {/* Vignette */}
-        <Box
-          ref={vignetteRef}
-          position="absolute"
-          inset={0}
-          zIndex={20}
-          background="radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.65) 100%)"
-          pointerEvents="none"
-          style={{ opacity: 0.15 }}
-        />
-      </Box>
-    </Box>
-  )
+const sx = {
+  position: 'relative', height: 'calc(100 * var(--sv))', minHeight: '640px', overflow: 'hidden',
+  display: 'grid', gridTemplateColumns: '.95fr 1.05fr', bg: 'brand.dark', fontFamily: 'display', color: 'brand.bone',
+  '.rv': { opacity: 0, transform: 'translateY(28px)', animation: `${rv} 1s ${EASE} forwards` },
+  '.txt': { position: 'relative', zIndex: 6, display: 'flex', flexDirection: 'column', justifyContent: 'center', p: '96px 32px 40px 60px' },
+  h1: { mt: '20px', fontWeight: 700, textTransform: 'uppercase', lineHeight: 0.86 },
+  '.n1': { display: 'block', fontSize: 'clamp(30px,3.4vw,58px)', color: 'brand.bone', letterSpacing: '.04em' },
+  '.n2': { display: 'block', fontSize: 'clamp(84px,10.4vw,180px)', color: 'brand.amber', ml: '-.04em' },
+  '.club': { display: 'flex', alignItems: 'center', gap: '14px' },
+  '.club img': { w: '52px', h: '52px', objectFit: 'contain' },
+  '.club b': { display: 'block', fontSize: '18px', fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: 'brand.bone' },
+  '.club span': { display: 'block', mt: '4px', fontSize: '11px', letterSpacing: '.2em', textTransform: 'uppercase', color: 'brand.gray' },
+  // Atributo estrella en barra segmentada
+  '.gauge': { mt: '26px', maxW: '440px' },
+  '.gauge .hd': { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', fontSize: '10px', letterSpacing: '.24em', textTransform: 'uppercase', color: 'brand.gray' },
+  '.gauge .hd b': { fontSize: '30px', letterSpacing: 0, color: 'brand.bone' },
+  '.gauge .bar': { mt: '8px', display: 'grid', gridTemplateColumns: 'repeat(20,1fr)', gap: '3px' },
+  '.gauge .bar span': { h: '10px', bg: 'brand.brownLight', animation: `${seg} .5s ${EASE} both` },
+  '.gauge .bar span.on': { bg: 'brand.amber' },
+  '.gauge .bar span.on:has(+ span:not(.on))': { bg: 'brand.terra' },
+  '.stats': { display: 'flex', mt: '22px', borderTop: '1px solid', borderBottom: '1px solid', borderColor: 'brand.line', maxW: '440px' },
+  '.stats div': { flex: 1, py: '12px', display: 'flex', flexDirection: 'column-reverse', justifyContent: 'flex-end' },
+  '.stats div+div': { pl: '18px', borderLeft: '1px solid', borderColor: 'brand.line' },
+  '.stats dd': { fontSize: '24px', fontWeight: 700, color: 'brand.bone', fontVariantNumeric: 'tabular-nums' },
+  '.stats dt': { fontSize: '9px', letterSpacing: '.2em', textTransform: 'uppercase', color: 'brand.gray' },
+  '.stats .hl dd': { color: 'brand.terra' },
+  '.ctas': { display: 'flex', gap: '12px', mt: '26px' },
+  '.btn': {
+    fontWeight: 700, fontSize: '11px', letterSpacing: '.2em', textTransform: 'uppercase', p: '15px 24px', borderRadius: 'full',
+    border: '1.5px solid', borderColor: 'brand.amber', color: 'brand.amber', textDecoration: 'none',
+    transition: 'transform .16s ease-out, background-color .2s ease, color .2s ease',
+  },
+  '.btn.solid': { bg: 'brand.amber', color: 'brand.onAcc' },
+  '.btn:active': { transform: 'scale(.97)' },
+  '@media (hover:hover) and (pointer:fine)': {
+    '.btn:hover': { bg: 'brand.amber', color: 'brand.onAcc' },
+    '.btn.solid:hover': { bg: 'transparent', color: 'brand.amber' },
+  },
+  // Escena
+  '.scene': { position: 'relative' },
+  '.glow': {
+    position: 'absolute', left: '50%', top: '52%', w: '120%', aspectRatio: '1', transform: 'translate(-50%,-50%)', borderRadius: '50%', zIndex: 0,
+    background: 'radial-gradient(closest-side,#d6ae4e40,#d6ae4e10 55%,transparent 72%)',
+  },
+  '.num': {
+    position: 'absolute', left: '44%', top: '50%', transform: 'translate(-50%,-54%)', fontWeight: 700, lineHeight: 0.8,
+    letterSpacing: '-.04em', whiteSpace: 'nowrap', fontSize: 'min(100vh,50vw)', color: 'transparent',
+    background: 'var(--ph) 50% 40%/cover', WebkitBackgroundClip: 'text', backgroundClip: 'text',
+    WebkitTextStroke: `2px ${c('amber')}`, filter: 'grayscale(1) sepia(.7) brightness(.55) contrast(1.25)',
+    animation: `${num} 1.6s ${EASE} .1s both`, userSelect: 'none',
+  },
+  '.pl': {
+    position: 'absolute', left: '50%', bottom: 0, h: '90%', w: 'auto', maxW: 'none', transform: 'translateX(-50%)', zIndex: 4,
+    filter: 'drop-shadow(0 30px 50px #000d)', animation: `${pl} 1.3s ${EASE} .35s both`,
+  },
+  '.fade': { position: 'absolute', inset: 'auto 0 0 0', h: '22%', background: `linear-gradient(transparent, ${c('dark')})`, zIndex: 5 },
+  '.mt': {
+    position: 'absolute', right: '28px', bottom: '28px', zIndex: 6, display: 'flex', gap: '18px', alignItems: 'center',
+    fontSize: '12px', color: 'brand.bone', bg: '#0f0d0acc', border: '1px solid', borderColor: 'brand.line', borderRadius: 'full',
+    p: '10px 18px', backdropFilter: 'blur(8px)',
+  },
+  '.mt small': { fontSize: '9px', letterSpacing: '.2em', textTransform: 'uppercase', color: 'brand.gray', mr: '6px' },
+  '.mt em': { fontStyle: 'normal', color: 'brand.terra', fontWeight: 700 },
+  '.mt i': { w: '1px', h: '14px', bg: 'brand.line' },
+  '@media (prefers-reduced-motion: reduce)': {
+    '.rv, .num, .pl, .gauge .bar span': { animation: 'none', opacity: 1 },
+    '.rv': { transform: 'none' },
+  },
+  '@media (max-width: 820px)': {
+    gridTemplateColumns: '1fr', gridTemplateRows: '50vh auto', height: 'auto', minHeight: 'calc(100 * var(--sv))',
+    '.scene': { gridRow: 1, minHeight: '400px', overflow: 'hidden' },
+    '.num': { left: '50%', fontSize: 'min(60vh,118vw)' },
+    '.pl': { h: '94%' },
+    '.mt': { display: 'none' },
+    '.txt': { gridRow: 2, p: '0 20px 28px' },
+    h1: { mt: '14px' },
+    '.n1': { fontSize: '8vw' },
+    '.n2': { fontSize: '22vw' },
+    '.club img': { w: '40px', h: '40px' },
+    '.club b': { fontSize: '14px' },
+    '.club span': { fontSize: '9px' },
+    '.gauge': { mt: '16px' },
+    '.gauge .hd b': { fontSize: '24px' },
+    '.gauge .bar span': { h: '8px' },
+    '.stats': { mt: '16px' },
+    '.stats dd': { fontSize: '20px' },
+    '.ctas': { mt: '18px' },
+    '.btn': { flex: 1, textAlign: 'center', p: '14px 10px' },
+  },
 }
