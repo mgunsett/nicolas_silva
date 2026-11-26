@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Box, chakra } from '@chakra-ui/react'
 import { playerData } from '../../data/playerData'
+import { EASE as EASE_CURVE, fine } from '../../lib/motion'
+import { scrollToId } from '../../lib/scroll'
 
 // Navbar "Cápsula con dorsal": cápsula flotante centrada con el dorsal, una píldora
 // dorada que se desliza al link de la sección visible y, en mobile, una hoja inferior.
 
-const EASE = 'cubic-bezier(0.23,1,0.32,1)'
+const EASE = EASE_CURVE
 
 const navLinks = [
   { label: 'Estadísticas', href: '#estadisticas' },
@@ -15,13 +17,6 @@ const navLinks = [
 ]
 const sheetLinks = [...navLinks, { label: 'Contacto', href: '#contact' }]
 const instagram = playerData.socialMedia.find((s) => s.label === 'Instagram')
-
-function scrollTo(href) {
-  const target = document.querySelector(href)
-  if (!target) return
-  if (window.__lenis) window.__lenis.scrollTo(target, { offset: -20 })
-  else target.scrollIntoView({ behavior: 'smooth' })
-}
 
 const A = chakra('a')
 
@@ -93,9 +88,9 @@ export default function Navbar() {
   const go = (e, href) => {
     e.preventDefault()
     setOpen(false)
-    scrollTo(href)
+    scrollToId(href)
   }
-  const current = (href) => (active === href ? { 'aria-current': 'true' } : {})
+  const current = (href) => (active === href ? { 'aria-current': 'page' } : {})
 
   return (
     <>
@@ -141,7 +136,7 @@ export default function Navbar() {
         <Box ref={linksRef} position="relative" display={{ base: 'none', lg: 'flex' }}>
           <Box
             as="span" aria-hidden="true" position="absolute" top={0} left={0} h="100%" borderRadius="full" bg="brand.amber" zIndex={0}
-            style={{ width: pill.w, transform: `translateX(${pill.x}px)`, opacity: pill.on ? 1 : 0 }}
+            w={`${pill.w}px`} transform={`translateX(${pill.x}px)`} opacity={pill.on ? 1 : 0}
             transition={`transform .5s ${EASE}, width .5s ${EASE}, opacity .3s`}
           />
           {navLinks.map((l) => (
@@ -149,10 +144,8 @@ export default function Navbar() {
               key={l.href} href={l.href} onClick={(e) => go(e, l.href)} {...current(l.href)}
               position="relative" zIndex={1} px="16px" py="11px" fontSize="11px" fontWeight={500} letterSpacing=".16em"
               textTransform="uppercase" textDecoration="none" color="brand.gray" transition="color .3s"
-              sx={{
-                '&[aria-current]': { color: 'brand.onAcc' },
-                '@media (hover:hover) and (pointer:fine)': { '&:not([aria-current]):hover': { color: 'brand.amber' } },
-              }}
+              _activeLink={{ color: 'brand.onAcc' }}
+              sx={{ ...fine({ color: 'brand.amber' }), '&[aria-current]': { color: 'brand.onAcc' } }}
             >
               {l.label}
             </A>
@@ -163,7 +156,7 @@ export default function Navbar() {
           href="#contact" onClick={(e) => go(e, '#contact')} display={{ base: 'none', lg: 'block' }} ml="4px" px="18px" py="12px"
           borderRadius="full" bg="brand.terra" color="brand.bone" fontSize="11px" fontWeight={700} letterSpacing=".16em"
           textTransform="uppercase" textDecoration="none" transition={`transform .25s ${EASE}`}
-          sx={{ '@media (hover:hover) and (pointer:fine)': { '&:hover': { transform: 'translateY(-1px)' } } }}
+          sx={fine({ transform: 'translateY(-1px)' })}
         >
           Contacto
         </A>
@@ -172,13 +165,14 @@ export default function Navbar() {
           display={{ base: 'block', lg: 'none' }} w="44px" h="44px" borderRadius="full" bg="brand.amber" position="relative"
           aria-label={open ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={open} aria-controls="menu-hoja"
           onClick={() => setOpen((v) => !v)}
-          sx={{
-            i: { position: 'absolute', left: '14px', right: '14px', h: '2px', bg: 'brand.onAcc', transition: `transform .4s ${EASE}` },
-            'i:nth-of-type(1)': { top: '17px', transform: open ? 'translateY(4px) rotate(45deg)' : 'none' },
-            'i:nth-of-type(2)': { top: '25px', transform: open ? 'translateY(-4px) rotate(-45deg)' : 'none' },
-          }}
         >
-          <i /><i />
+          {[17, 25].map((top, i) => (
+            <Box
+              key={top} as="span" position="absolute" left="14px" right="14px" top={`${top}px`} h="2px" bg="brand.onAcc"
+              transition={`transform .4s ${EASE}`}
+              transform={open ? `translateY(${i ? -4 : 4}px) rotate(${i ? -45 : 45}deg)` : 'none'}
+            />
+          ))}
         </chakra.button>
       </Box>
 
@@ -194,7 +188,7 @@ export default function Navbar() {
         bg="brand.bg2" borderRadius="24px" p="10px 10px 14px" boxShadow="0 -10px 50px #07060533" fontFamily="display"
         transform={open ? 'none' : 'translateY(110%)'} transition={`transform .55s ${EASE}`}
         visibility={open ? 'visible' : 'hidden'}
-        sx={{ transitionProperty: 'transform, visibility', transitionDuration: open ? '.55s, 0s' : '.55s, 0s', transitionDelay: open ? '0s, 0s' : '0s, .55s' }}
+        transitionProperty="transform, visibility" transitionDuration=".55s, 0s" transitionDelay={open ? '0s, 0s' : '0s, .55s'}
       >
         <Box w="44px" h="4px" borderRadius="4px" bg="brand.line" mx="auto" mt="4px" mb="10px" />
         {sheetLinks.map((l, i) => (
@@ -202,7 +196,7 @@ export default function Navbar() {
             key={l.href} href={l.href} onClick={(e) => go(e, l.href)} {...current(l.href)}
             display="flex" alignItems="baseline" gap="14px" px="14px" py="13px" borderRadius="14px" textDecoration="none"
             fontWeight={700} fontSize="26px" textTransform="uppercase" color="brand.amber"
-            sx={{ '&[aria-current]': { bg: 'brand.bgRef' } }}
+            _activeLink={{ bg: 'brand.bgRef' }}
           >
             <Box as="small" fontSize="11px" color="brand.terra" letterSpacing=".1em" fontWeight={500}>0{i + 1}</Box>
             {l.label}

@@ -44,8 +44,12 @@ const theme = extendTheme({
     body:      `'Barlow', sans-serif`,
     mono:      `'Barlow Condensed', sans-serif`,
   },
+  // 820px: el corte entre el diseño de celular y el de escritorio de las secciones
+  breakpoints: { tab: '821px' },
   styles: {
     global: {
+      // Alto de pantalla estable en mobile (no salta con la barra del navegador)
+      ':root': { '--sv': '1vh', '@supports (height:1svh)': { '--sv': '1svh' } },
       'html, body': {
         bg: brand.dark,
         color: brand.bone,
