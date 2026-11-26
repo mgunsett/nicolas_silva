@@ -4,6 +4,7 @@ import { IoMdStats } from 'react-icons/io'
 
 //Hero
 import polaco1 from '@assets/polaco1.webp'
+import heroWide from '@assets/hero-ancho.webp'
 
 import argentina from '@assets/argentina.webp'
 import cusco from '@assets/escudo_cusco.webp'
@@ -61,16 +62,19 @@ export const playerData = {
   foot: 'Derecho',
   birthDate: '24 / 01 / 1990',
   birthPlace: 'Las Parejas, Santa Fe, Argentina',
+  birthPlaceShort: 'Las Parejas, ARG',
   currentClub: 'Cusco FC',
+  league: 'Liga 1 · Perú',
   logoCurrentClub: cusco,
   image: polaco1,
+  heroWide, // foto de cancha que rellena el dorsal del hero
   
 
   stats: [
     { label: 'Velocidad',      value: 94 },
     { label: 'Definición',     value: 79 },
     { label: 'Regate',         value: 89 },
-    { label: 'Pases Completos',    value: 83 },
+    { label: 'Pases',          value: 83 },
     { label: 'Presión Alta',   value: 80 },
     { label: 'Visión de Juego',value: 77 },
   ],

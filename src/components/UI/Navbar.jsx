@@ -1,265 +1,232 @@
-import { useState, useEffect, useRef } from 'react'
-import { Box, Flex, Text, HStack, VStack } from '@chakra-ui/react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { gsap } from 'gsap'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { Box, chakra } from '@chakra-ui/react'
 import { playerData } from '../../data/playerData'
 
-const MotionBox = motion(Box)
+// Navbar "Cápsula con dorsal": cápsula flotante centrada con el dorsal, una píldora
+// dorada que se desliza al link de la sección visible y, en mobile, una hoja inferior.
+
+const EASE = 'cubic-bezier(0.23,1,0.32,1)'
 
 const navLinks = [
-  { label: 'Home', href: '#hero'},
   { label: 'Estadísticas', href: '#estadisticas' },
+  { label: 'Clubes',       href: '#clubes' },
   { label: 'Videos',       href: '#videos' },
   { label: 'Galería',      href: '#galeria' },
 ]
-
-const mobileLinks = [
-  ...navLinks,
-  { label: 'Contacto', href: '#contact' },
-]
+const sheetLinks = [...navLinks, { label: 'Contacto', href: '#contact' }]
+const instagram = playerData.socialMedia.find((s) => s.label === 'Instagram')
 
 function scrollTo(href) {
   const target = document.querySelector(href)
   if (!target) return
-  if (window.__lenis) {
-    window.__lenis.scrollTo(target, { offset: -20 })
-  } else {
-    target.scrollIntoView({ behavior: 'smooth' })
-  }
+  if (window.__lenis) window.__lenis.scrollTo(target, { offset: -20 })
+  else target.scrollIntoView({ behavior: 'smooth' })
 }
 
+const A = chakra('a')
+
 export default function Navbar() {
-  const [scrolled, setScrolled]   = useState(false)
-  const [menuOpen, setMenuOpen]   = useState(false)
-  const navRef                    = useRef(null)
+  const [active, setActive] = useState(null)
+  const [hidden, setHidden] = useState(false)
+  const [open, setOpen]     = useState(false)
+  const [pill, setPill]     = useState({ x: 0, w: 0, on: false })
+  const linksRef            = useRef(null)
+  const openRef             = useRef(false)
+  openRef.current = open
 
+  // Sección visible → link activo
   useEffect(() => {
-    gsap.fromTo(navRef.current,
-      { y: -60, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.9, ease: 'expo.out', delay: 0.5 }
-    )
+    // La activa es la última sección cuyo borde superior ya cruzó el 40% de la pantalla
+    const ids = ['#hero', ...sheetLinks.map((l) => l.href)]
+    let raf = 0
+    const check = () => {
+      raf = 0
+      const line = window.innerHeight * 0.4
+      let cur = null
+      ids.forEach((h) => {
+        const el = document.querySelector(h)
+        if (el && el.getBoundingClientRect().top <= line) cur = h
+      })
+      setActive(cur)
+    }
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(check) }
+    check()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      cancelAnimationFrame(raf)
+    }
   }, [])
 
+  // Se esconde al bajar (pasados 400px) y vuelve al subir
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 80)
-    window.addEventListener('scroll', handler, { passive: true })
-    return () => window.removeEventListener('scroll', handler)
+    let last = window.scrollY
+    const onScroll = () => {
+      const y = window.scrollY
+      setHidden(y > last && y > 400 && !openRef.current)
+      last = y
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const handleLink = (e, href) => {
+  // Píldora: se mueve al link activo
+  const placePill = useCallback(() => {
+    const a = linksRef.current?.querySelector(`a[href="${active}"]`)
+    if (a && a.offsetParent) setPill({ x: a.offsetLeft, w: a.offsetWidth, on: true })
+    else setPill((p) => ({ ...p, on: false }))
+  }, [active])
+  useEffect(() => {
+    placePill()
+    window.addEventListener('resize', placePill)
+    return () => window.removeEventListener('resize', placePill)
+  }, [placePill])
+
+  useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && setOpen(false)
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  const go = (e, href) => {
     e.preventDefault()
-    setMenuOpen(false)
+    setOpen(false)
     scrollTo(href)
   }
+  const current = (href) => (active === href ? { 'aria-current': 'true' } : {})
 
   return (
-    <Box
-      ref={navRef}
-      as="nav"
-      position="fixed"
-      top={{ base: 3, lg: 2  }}
-      left={0}
-      right={0}
-      zIndex={1000}
-      px={{ base: 4, lg: 4 }}
-      style={{ opacity: 0 }}
-    >
-      <Flex
-        align="center"
-        justify="space-between"
-        maxW="1100px"
-        mx="auto"
-        px={{ base: 4, lg: 7 }}
-        py={{ base: 1.5, lg: 1 }}
-        borderRadius={{ base: '18px', lg: '10px' }}
+    <>
+      <Box
+        as="nav"
+        aria-label="Principal"
+        position="fixed"
+        top="18px"
+        left={{ base: '12px', lg: '50%' }}
+        right={{ base: '12px', lg: 'auto' }}
+        zIndex={1000}
+        display="flex"
+        alignItems="center"
+        justifyContent={{ base: 'space-between', lg: 'flex-start' }}
+        gap="6px"
+        p="6px"
+        borderRadius="full"
+        bg="brand.dark3"
         border="1px solid"
-        borderColor={'brand.amber'}
-        bg={'brand.dark3'}
-        backdropFilter="blur(10px) saturate(140%)"
-        boxShadow={scrolled
-          ? '0 10px 34px rgba(0,0,0,0.40)'
-          : '0 6px 26px rgba(0,0,0,0.22)'}
-        transition="background 0.35s, border-color 0.35s, box-shadow 0.35s"
+        borderColor="brand.line"
+        backdropFilter="blur(14px) saturate(160%)"
+        boxShadow="0 10px 40px #07060522"
+        fontFamily="display"
+        transform={{
+          base: hidden ? 'translateY(-140%)' : 'none',
+          lg: hidden ? 'translate(-50%,-140%)' : 'translateX(-50%)',
+        }}
+        transition={`transform .5s ${EASE}`}
       >
-        {/* Logo */}
-        <Text
-          fontFamily='"Shadows Into Light", cursive'
-          fontSize="2xl"
-          letterSpacing="wider"
-          color="brand.amber"
-          cursor="pointer"
-          onClick={(e) => handleLink(e, '#hero')}
-          _hover={{ color: 'brand.brown' }}
-          transition="color 0.2s"
-        >
-          {playerData.initials}<Box as="span" color="brand.gray2">_</Box>
-        </Text>
+        <A href="#hero" onClick={(e) => go(e, '#hero')} display="flex" alignItems="center" gap="10px" pr="14px" textDecoration="none" aria-label={`${playerData.displayName}, ir al inicio`}>
+          <Box
+            as="span" position="relative" w="40px" h="40px" borderRadius="full" bg="brand.amber" color="brand.onAcc"
+            display="grid" placeItems="center" fontWeight={700} fontSize="18px"
+            _after={{ content: '""', position: 'absolute', right: '-1px', bottom: '-1px', w: '12px', h: '12px', borderRadius: 'full', bg: 'brand.terra', border: '2px solid', borderColor: 'brand.bone' }}
+          >
+            {playerData.number}
+          </Box>
+          <Box as="b" fontWeight={700} fontSize="14px" letterSpacing=".08em" textTransform="uppercase" color="brand.amber">
+            {playerData.fullName} <Box as="span" color="brand.gray" fontWeight={400}>· {playerData.positionShort}</Box>
+          </Box>
+        </A>
 
-        {/* Desktop links */}
-        <HStack spacing={1} display={{ base: 'none', lg: 'flex' }}>
-          {navLinks.map((link) => (
-            <Text
-              key={link.href}
-              as="a"
-              href={link.href}
-              onClick={(e) => handleLink(e, link.href)}
-              position="relative"
-              px={4}
-              py={2}
-              borderRadius="10px"
-              fontFamily='"Shadows Into Light", cursive'
-              fontSize="2xs"
-              fontWeight="500"
-              letterSpacing="wider"
-              textTransform="uppercase"
-              color="brand.amber"
-              cursor="pointer"
-              transition="color 0.25s"
-              _before={{
-                content: '""',
-                position: 'absolute',
-                inset: 0,
-                borderRadius: '10px',
-                bg: 'linear-gradient(135deg, rgba(77,147,214,0.22) 0%, rgba(30,95,168,0.10) 100%)',
-                opacity: 0,
-                transform: 'scale(0.92)',
-                transition: 'opacity 0.25s, transform 0.25s',
-                pointerEvents: 'none',
-              }}   
-              _hover={{
-                color: 'white',
-                _before: { opacity: 1, transform: 'scale(1)' },
-                _after: { width: '40%' },
+        <Box ref={linksRef} position="relative" display={{ base: 'none', lg: 'flex' }}>
+          <Box
+            as="span" aria-hidden="true" position="absolute" top={0} left={0} h="100%" borderRadius="full" bg="brand.amber" zIndex={0}
+            style={{ width: pill.w, transform: `translateX(${pill.x}px)`, opacity: pill.on ? 1 : 0 }}
+            transition={`transform .5s ${EASE}, width .5s ${EASE}, opacity .3s`}
+          />
+          {navLinks.map((l) => (
+            <A
+              key={l.href} href={l.href} onClick={(e) => go(e, l.href)} {...current(l.href)}
+              position="relative" zIndex={1} px="16px" py="11px" fontSize="11px" fontWeight={500} letterSpacing=".16em"
+              textTransform="uppercase" textDecoration="none" color="brand.gray" transition="color .3s"
+              sx={{
+                '&[aria-current]': { color: 'brand.onAcc' },
+                '@media (hover:hover) and (pointer:fine)': { '&:not([aria-current]):hover': { color: 'brand.amber' } },
               }}
             >
-              <Box as="span" position="relative" zIndex={1}>
-                {link.label}
-              </Box>
-            </Text>
+              {l.label}
+            </A>
           ))}
-        </HStack>
+        </Box>
 
-        {/* CTA desktop */}
-        <Box
-          as="a"
-          href="#contact"
-          onClick={(e) => handleLink(e, '#contact')}
-          display={{ base: 'none', lg: 'block' }}
-          px={'10px'}
-          py={'5px'}
-          bg="brand.amber"
-          border="1px solid"
-          borderColor='brand.amberLight'
-          borderRadius={'5px'}
-          fontFamily='"Shadows Into Light", cursive'
-          fontSize="2xs"
-          fontWeight="600"
-          letterSpacing="wider"
-          textTransform="uppercase"
-          color="brand.brownLight"
-          cursor="pointer"
-          transition="all 0.2s"
-          _hover={{ bg: 'brand.brown', color: 'white' }}
+        <A
+          href="#contact" onClick={(e) => go(e, '#contact')} display={{ base: 'none', lg: 'block' }} ml="4px" px="18px" py="12px"
+          borderRadius="full" bg="brand.terra" color="brand.bone" fontSize="11px" fontWeight={700} letterSpacing=".16em"
+          textTransform="uppercase" textDecoration="none" transition={`transform .25s ${EASE}`}
+          sx={{ '@media (hover:hover) and (pointer:fine)': { '&:hover': { transform: 'translateY(-1px)' } } }}
         >
           Contacto
-        </Box>
+        </A>
 
-        {/* Hamburger mobile */}
-        <Box
-          display={{ base: 'flex', lg: 'none' }}
-          flexDir="column"
-          gap="5px"
-          cursor="pointer"
-          onClick={() => setMenuOpen(!menuOpen)}
-          p={2}
+        <chakra.button
+          display={{ base: 'block', lg: 'none' }} w="44px" h="44px" borderRadius="full" bg="brand.amber" position="relative"
+          aria-label={open ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={open} aria-controls="menu-hoja"
+          onClick={() => setOpen((v) => !v)}
+          sx={{
+            i: { position: 'absolute', left: '14px', right: '14px', h: '2px', bg: 'brand.onAcc', transition: `transform .4s ${EASE}` },
+            'i:nth-of-type(1)': { top: '17px', transform: open ? 'translateY(4px) rotate(45deg)' : 'none' },
+            'i:nth-of-type(2)': { top: '25px', transform: open ? 'translateY(-4px) rotate(-45deg)' : 'none' },
+          }}
         >
-          {[0, 1, 2].map((i) => (
-            <Box
-              key={i}
-              w="22px"
-              h="1.5px"
-              bg="white"
-              transition="all 0.25s"
-              transform={
-                menuOpen
-                  ? i === 0 ? 'rotate(45deg) translate(4.5px, 4.5px)'
-                  : i === 1 ? 'scaleX(0)'
-                  : 'rotate(-45deg) translate(4.5px, -4.5px)'
-                  : 'none'
-              }
-            />
-          ))}
-        </Box>
-      </Flex>
+          <i /><i />
+        </chakra.button>
+      </Box>
 
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <MotionBox
-            initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            display={{ base: 'block', lg: 'none' }}
-            maxW="1400px"
-            mx="auto"
-            mt={3}
-            borderRadius="18px"
-            border="1px solid rgba(255,255,255,0.12)"
-            bg="rgba(5,11,20,0.65)"
-            backdropFilter="blur(20px) saturate(140%)"
-            boxShadow="0 10px 34px rgba(0,0,0,0.40)"
-            overflow="hidden"
+      {/* Hoja inferior (mobile) */}
+      <Box
+        display={{ base: 'block', lg: 'none' }} position="fixed" inset={0} zIndex={990} bg="#07060566"
+        opacity={open ? 1 : 0} pointerEvents={open ? 'auto' : 'none'} transition="opacity .4s"
+        onClick={() => setOpen(false)}
+      />
+      <Box
+        id="menu-hoja" role="dialog" aria-label="Menú" aria-hidden={!open}
+        display={{ base: 'block', lg: 'none' }} position="fixed" left="10px" right="10px" bottom="10px" zIndex={995}
+        bg="brand.bg2" borderRadius="24px" p="10px 10px 14px" boxShadow="0 -10px 50px #07060533" fontFamily="display"
+        transform={open ? 'none' : 'translateY(110%)'} transition={`transform .55s ${EASE}`}
+        visibility={open ? 'visible' : 'hidden'}
+        sx={{ transitionProperty: 'transform, visibility', transitionDuration: open ? '.55s, 0s' : '.55s, 0s', transitionDelay: open ? '0s, 0s' : '0s, .55s' }}
+      >
+        <Box w="44px" h="4px" borderRadius="4px" bg="brand.line" mx="auto" mt="4px" mb="10px" />
+        {sheetLinks.map((l, i) => (
+          <A
+            key={l.href} href={l.href} onClick={(e) => go(e, l.href)} {...current(l.href)}
+            display="flex" alignItems="baseline" gap="14px" px="14px" py="13px" borderRadius="14px" textDecoration="none"
+            fontWeight={700} fontSize="26px" textTransform="uppercase" color="brand.amber"
+            sx={{ '&[aria-current]': { bg: 'brand.bgRef' } }}
           >
-            <VStack align="stretch" spacing={0} py={2} px={2}>
-              {mobileLinks.map((link, i) => (
-                <MotionBox
-                  key={link.href}
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.06 }}
-                  w="full"
-                >
-                  <Flex
-                    as="a"
-                    href={link.href}
-                    onClick={(e) => handleLink(e, link.href)}
-                    align="center"
-                    gap={3}
-                    py={3}
-                    px={3}
-                    borderRadius="12px"
-                    _hover={{ color: 'brand.brown', bg: 'whiteAlpha.50' }}
-                    transition="color 0.2s, background 0.2s"
-                    cursor="pointer"
-                  >
-                    <Text
-                      as="span"
-                      fontFamily="mono"
-                      fontSize="2xs"
-                      fontWeight="600"
-                      letterSpacing="wider"
-                      color="brand.amberLight"
-                    >
-                      {String(i + 1).padStart(2, '0')}
-                    </Text>
-                    <Text
-                      fontFamily="mono"
-                      fontSize="lg"
-                      fontWeight="600"
-                      letterSpacing="wider"
-                      textTransform="uppercase"
-                      color="whiteAlpha.800"
-                    >
-                      {link.label}
-                    </Text>
-                  </Flex>
-                </MotionBox>
-              ))}
-            </VStack>
-          </MotionBox>
-        )}
-      </AnimatePresence>
-    </Box>
+            <Box as="small" fontSize="11px" color="brand.terra" letterSpacing=".1em" fontWeight={500}>0{i + 1}</Box>
+            {l.label}
+          </A>
+        ))}
+        <Box display="flex" gap="8px" mt="8px">
+          <A
+            href="#contact" onClick={(e) => go(e, '#contact')} flex={1} textAlign="center" p="14px" borderRadius="full"
+            fontSize="11px" fontWeight={700} letterSpacing=".16em" textTransform="uppercase" textDecoration="none"
+            bg="brand.amber" color="brand.onAcc"
+          >
+            Contacto
+          </A>
+          {instagram && (
+            <A
+              href={instagram.url} target="_blank" rel="noopener noreferrer" flex={1} textAlign="center" p="14px" borderRadius="full"
+              fontSize="11px" fontWeight={700} letterSpacing=".16em" textTransform="uppercase" textDecoration="none"
+              bg="brand.bgRef" color="brand.amber"
+            >
+              {instagram.handle}
+            </A>
+          )}
+        </Box>
+      </Box>
+    </>
   )
 }
