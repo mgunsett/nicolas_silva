@@ -94,24 +94,70 @@ function SeasonFigures({ items }) {
   )
 }
 
+const matchLabel = { fontSize: '9px', letterSpacing: '.2em', textTransform: 'uppercase', color: 'brand.gray' }
+
+// Escudo del equipo; si no hay escudo cargado, se muestra el nombre
+function TeamCrest({ team, size }) {
+  if (!team.shield) return <Text as="span" fontSize="12px">{team.name}</Text>
+  return <Image src={team.shield} alt={team.name} title={team.name} boxSize={size} objectFit="contain" loading="lazy" />
+}
+
+// Escudo local · resultado (o "vs") · escudo visitante
+function Fixture({ match, size = '22px' }) {
+  return (
+    <Flex as="span" align="center" gap="10px">
+      <TeamCrest team={match.home} size={size} />
+      {hasScore(match)
+        ? <Text as="em" fontStyle="normal" fontWeight={700} color="brand.terra" sx={{ fontVariantNumeric: 'tabular-nums' }}>{match.homeScore}-{match.awayScore}</Text>
+        : <Text as="span" fontSize="11px" color="brand.gray">vs</Text>}
+      <TeamCrest team={match.away} size={size} />
+    </Flex>
+  )
+}
+
+// Desktop: cápsula flotante sobre la escena
 function MatchPill({ last, next }) {
   const enter = useEnter()
-  const label = { fontSize: '9px', letterSpacing: '.2em', textTransform: 'uppercase', color: 'brand.gray', mr: '6px' }
   return (
     <Flex
       display={{ base: 'none', tab: 'flex' }} position="absolute" right="28px" bottom="28px" zIndex={6} gap="18px" align="center"
       fontSize="12px" color="brand.bone" bg="#0f0d0acc" border="1px solid" borderColor="brand.line" borderRadius="full" p="10px 18px"
       backdropFilter="blur(8px)" {...enter(rise, 1, 1)}
     >
-      <Text as="span">
-        <Text as="small" {...label}>Último</Text>
-        {last.home.name}{' '}
-        {hasScore(last) ? <Text as="em" fontStyle="normal" fontWeight={700} color="brand.terra">{last.homeScore}-{last.awayScore}</Text> : 'vs'}{' '}
-        {last.away.name}
-      </Text>
+      <Flex as="span" align="center" gap="8px">
+        <Text as="small" {...matchLabel}>Último</Text>
+        <Fixture match={last} />
+      </Flex>
       <Box w="1px" h="14px" bg="brand.line" />
-      <Text as="span"><Text as="small" {...label}>Próximo</Text>{next.home.name} vs {next.away.name} · {next.date}</Text>
+      <Flex as="span" align="center" gap="8px">
+        <Text as="small" {...matchLabel}>Próximo</Text>
+        <Fixture match={next} />
+        <Text as="span">· {next.date}</Text>
+      </Flex>
     </Flex>
+  )
+}
+
+// Mobile: tarjeta de dos filas en lugar de los CTA
+function MatchCard({ last, next }) {
+  const enter = useEnter()
+  const rows = [['Último', last], ['Próximo', next]]
+  return (
+    <Box
+      display={{ base: 'block', tab: 'none' }} mt="18px" bg="brand.bg2" border="1px solid" borderColor="brand.line"
+      borderRadius="14px" overflow="hidden" {...enter(rise, 1, 0.7)}
+    >
+      {rows.map(([label, match], i) => (
+        <Grid
+          key={label} templateColumns="70px 1fr auto" alignItems="center" gap="10px" px="16px" py="12px"
+          borderTop={i ? '1px solid' : 0} borderColor="brand.line" fontSize="14px"
+        >
+          <Text as="span" {...matchLabel} color={i ? 'brand.amber' : 'brand.gray'}>{label}</Text>
+          <Fixture match={match} size="28px" />
+          <Text as="span" fontSize="10px" letterSpacing=".08em" textTransform="uppercase" color="brand.gray">{match.date}</Text>
+        </Grid>
+      ))}
+    </Box>
   )
 }
 
@@ -152,10 +198,12 @@ export default function Hero() {
         <StarGauge attr={top} />
         <SeasonFigures items={stats} />
 
-        <Flex gap="12px" mt={{ base: '18px', tab: '26px' }} {...enter(rise, 1, 0.7)}>
+        {/* CTA solo en desktop; en mobile su lugar lo ocupa la tarjeta de partidos */}
+        <Flex display={{ base: 'none', tab: 'flex' }} gap="12px" mt="26px" {...enter(rise, 1, 0.7)}>
           <CtaButton solid href="#videos">Ver jugadas</CtaButton>
           <CtaButton href="#contact">Contacto</CtaButton>
         </Flex>
+        {matches.last && matches.next && <MatchCard last={matches.last} next={matches.next} />}
       </Flex>
 
       <Box position="relative" gridRow={{ base: 1, tab: 'auto' }} minH={{ base: '400px', tab: 0 }} overflow={{ base: 'hidden', tab: 'visible' }}>
@@ -166,7 +214,7 @@ export default function Hero() {
         <Box
           aria-hidden="true" position="absolute" top="50%" left={{ base: '50%', tab: '44%' }} transform="translate(-50%,-54%)"
           fontWeight={700} lineHeight={0.8} letterSpacing="-.04em" whiteSpace="nowrap" userSelect="none"
-          fontSize={{ base: 'min(60vh,118vw)', tab: 'min(100vh,50vw)' }} color="transparent"
+          fontSize={{ base: 'min(52vh,102vw)', tab: 'min(100vh,50vw)' }} color="transparent"
           bgImage={`url(${heroWide})`} bgSize="cover" bgPosition="50% 40%" bgClip="text"
           filter="grayscale(1) sepia(.7) brightness(.55) contrast(1.25)"
           sx={{ WebkitTextStroke: '2px var(--chakra-colors-brand-amber)' }}
@@ -176,7 +224,7 @@ export default function Hero() {
         </Box>
         <Image
           src={image} fetchpriority="high" alt={`${name} ${fullName}, ${position.toLowerCase()} de ${currentClub}`}
-          position="absolute" left="50%" bottom={0} h={{ base: '94%', tab: '90%' }} w="auto" maxW="none" transform="translateX(-50%)" zIndex={4}
+          position="absolute" left="50%" bottom={{ base: '-8%', tab: 0 }} h={{ base: '94%', tab: '90%' }} w="auto" maxW="none" transform="translateX(-50%)" zIndex={4}
           filter="drop-shadow(0 30px 50px #000d)" {...enter(slide, 1.3, 0.35)}
         />
         <Box position="absolute" left={0} right={0} bottom={0} h="22%" zIndex={5} bgGradient="linear(to-b, transparent, var(--chakra-colors-brand-dark))" />
