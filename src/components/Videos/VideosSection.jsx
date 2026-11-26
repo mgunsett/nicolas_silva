@@ -1,309 +1,253 @@
-import { useRef, useEffect, useState } from 'react'
-import { Box, Flex, Text, AspectRatio } from '@chakra-ui/react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { FiX, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-
+import { useEffect, useRef, useState } from 'react'
+import { Box } from '@chakra-ui/react'
+import { AnimatePresence, motion, useInView } from 'framer-motion'
+import { keyframes } from '@emotion/react'
+import { FaInstagram, FaYoutube } from 'react-icons/fa'
 import { playerData } from '../../data/playerData'
-import useScrubReveal from '../../hooks/useScrubReveal'
-import { VideoCard } from './VideoCard'
 
-gsap.registerPlugin(ScrollTrigger)
+// Videos "Highlight + reels": arriba un video principal de YouTube en formato cine que se
+// reproduce en el lugar; abajo 3 reels de Instagram que se abren en un visor.
 
-const MotionBox = motion(Box)
+const EASE = [0.23, 1, 0.32, 1]
+const CSS_EASE = 'cubic-bezier(0.23,1,0.32,1)'
+const rise = keyframes`from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}`
+const ring = keyframes`0%{transform:scale(1);opacity:.55}70%,100%{transform:scale(1.6);opacity:0}`
 
-export default function VideosSection() {
-  const videos = playerData.videos
+const PlayIcon = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
+)
 
-  const ghostRef = useRef(null)
-  const wrapRef = useRef(null)
-  const sliderRef = useRef(null)
-
-  const [active, setActive] = useState(0)
-  const [openVideo, setOpenVideo] = useState(null)
-
-  const sectionRef = useRef(null)
-  const headerRef = useRef(null)
-
-  useScrubReveal(sectionRef, {
-    elements: [{ ref: headerRef, fromVars: { y: 50, opacity: 0 }, vars: { y: 0, opacity: 1 } }],
-    start: 'top 80%',
-    end: 'top 40%',
-  })
-
-  useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        headerRef.current,
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.9,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: headerRef.current, start: 'top 85%', once: true },
-        }
-      )
-
-      const cards = gsap.utils.toArray('.video-card', wrapRef.current)
-      if (reduced) {
-        gsap.set(cards, { autoAlpha: 1, y: 0 })
-      } else {
-        gsap.fromTo(
-          cards,
-          { y: 55, autoAlpha: 0, rotateX: 6, transformPerspective: 1200 },
-          {
-            y: 0,
-            autoAlpha: 1,
-            rotateX: 0,
-            duration: 1.1,
-            ease: 'power3.out',
-            stagger: 0.12,
-            scrollTrigger: { trigger: wrapRef.current, start: 'top 82%', once: true },
-          }
-        )
-      }
-
-      if (!reduced && ghostRef.current) {
-        gsap.to(ghostRef.current, {
-          yPercent: -18,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true,
-          },
-        })
-      }
-    }, sectionRef)
-    return () => ctx.revert()
-  }, [])
-
-  useEffect(() => {
-    if (!openVideo) return
-    const onKey = (e) => e.key === 'Escape' && setOpenVideo(null)
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [openVideo])
-
-  // slider mobile: detectar card activa según el scroll
-  const handleScroll = () => {
-    const el = sliderRef.current
-    if (!el || !el.children.length) return
-    const style = getComputedStyle(el)
-    const gap = parseFloat(style.columnGap || style.gap || '0') || 0
-    const itemW = el.children[0].offsetWidth + gap
-    if (!itemW) return
-    setActive(Math.round(el.scrollLeft / itemW))
-  }
-
-  const goTo = (i) => {
-    const el = sliderRef.current
-    el?.children[i]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
-  }
-
-  if (!videos.length) return null
+function Featured({ video }) {
+  const [playing, setPlaying] = useState(false)
+  const [poster, setPoster] = useState(`https://i.ytimg.com/vi/${video.youtubeId}/maxresdefault.jpg`)
+  const name = `${playerData.name} ${playerData.fullName}`
 
   return (
-    <Box
-      as="section"
-      id="videos"
-      ref={sectionRef}
-      position="relative"
-      minH="100vh"
-      bg="brand.dark"
-      px={{ base: 2, md: 12, lg: 40 }}
-      pt={{ base: 20, md: '10%' }}
-      pb={{ base: 12, md: '10%' }}
-      overflow="hidden"
-    >
-      {/* glows ambientales */}
-      <Box
-        position="absolute"
-        top={{ base: '10%', md: '-5%' }}
-        right="-12%"
-        w="55vw"
-        h="55vw"
-        background="radial-gradient(ellipse, rgba(189,167,142,0.16) 0%, transparent 70%)"
-        pointerEvents="none"
-      />
+    <div className="feat rv" style={{ animationDelay: '.1s' }}>
+      {playing ? (
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
+          title={`${name}: ${video.title}`}
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+          allowFullScreen
+        />
+      ) : (
+        <button type="button" className="poster" onClick={() => setPlaying(true)} aria-label={`Reproducir ${video.title} de ${name}`}>
+          <img
+            src={poster} alt="" loading="lazy"
+            // maxres no existe en todos los videos; si falla, la foto local
+            onError={() => setPoster(video.cover)}
+          />
+          <span className="shade" />
+          <span className="play"><i /><PlayIcon /></span>
+          <span className="info">
+            <span className="k"><FaYoutube aria-hidden="true" /> Highlight principal</span>
+            <span className="t">{video.title}</span>
+            <span className="s">{video.subtitle}</span>
+          </span>
+        </button>
+      )}
+    </div>
+  )
+}
 
-      {/* número fantasma gigante (dorsal) */}
-      <Text
-        ref={ghostRef}
-        aria-hidden
-        position="absolute"
-        top={{ base: '10%', md: '12%' }}
-        right={{ base: '-15%', md: '8%' }}
-        fontFamily="heading"
-        fontSize={{ base: '80vw', md: '40vw' }}
-        lineHeight={0.8}
-        color="transparent"
-        pointerEvents="none"
-        userSelect="none"
-        zIndex={0}
-        sx={{ WebkitTextStroke: '1.5px rgba(189,167,142,0.14)' }}
-      >
-        {playerData.number}
-      </Text>
+function Reel({ v, i, onOpen }) {
+  return (
+    <button type="button" className="reel rv" style={{ animationDelay: `${0.25 + i * 0.08}s` }} onClick={() => onOpen(v)} aria-label={`Ver reel: ${v.title}`}>
+      <img src={v.cover} alt="" loading="lazy" />
+      <span className="shade" />
+      <span className="top">
+        <span className="n">0{i + 1}</span>
+        <FaInstagram aria-hidden="true" />
+      </span>
+      <span className="mini"><PlayIcon /></span>
+      <span className="info">
+        <span className="c">{v.category}</span>
+        <span className="t">{v.title}</span>
+      </span>
+    </button>
+  )
+}
 
-      <Box maxW="1240px" mx="auto" position="relative" zIndex={1}>
-        {/* ── Header ── */}
-        <Flex direction="column" align="flex-start" justify="flex-start" ref={headerRef} mb={{ base: 8, md: 12 }} ml={{ base: 0, md: '-30px', lg: '-90px' }}>
-          <Text fontFamily='"Shadows Into Light", cursive' fontSize="10px" color="brand.bone" textTransform="uppercase" letterSpacing="widest">
-            HIGHLIGHTS
-          </Text>
-          <Text as="h2" fontFamily="heading" fontWeight="bold" fontSize={{ base: '5xl', lg: '6xl' }} color="brand.amber" lineHeight={1}>
-            Videos
-          </Text>
-        </Flex>
+export default function VideosSection() {
+  const featured = playerData.featuredVideo
+  const reels = playerData.videos.slice(0, 3)
+  const instagram = playerData.socialMedia.find((s) => s.label === 'Instagram')
+  const [open, setOpen] = useState(null)
+  const ref = useRef(null)
+  const closeRef = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '0px 0px -20% 0px' })
 
-        {/* ── Cards ── */}
-        <Box ref={wrapRef} position="relative" ml={{ base: 2, md: '0'}}>
-          {/* Desktop: en fila */}
-          <Flex display={{ base: 'none', md: 'flex' }} justify="center" align="stretch" gap={{ md: 5, lg: 12 }}>
-            {videos.map((v, i) => (
-              <Box key={v.id} flex="1 1 0" maxW={{ md: '300px', lg: '340px' }}>
-                <VideoCard video={v} index={i} onOpen={setOpenVideo} />
-              </Box>
-            ))}
-          </Flex>
+  // Visor: Escape cierra, foco en cerrar, scroll de fondo en pausa
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e) => e.key === 'Escape' && setOpen(null)
+    window.addEventListener('keydown', onKey)
+    window.__lenis?.stop()
+    closeRef.current?.focus()
+    return () => { window.removeEventListener('keydown', onKey); window.__lenis?.start() }
+  }, [open])
 
-          {/* Mobile: slider con swipe */}
-          <Box display={{ base: 'block', md: 'none' }}>
-            <Flex
-              ref={sliderRef}
-              onScroll={handleScroll}
-              overflowX="auto"
-              scrollSnapType="x mandatory"
-              bg="transparent"
-              gap={4}
-              px="0%"
-              sx={{
-                scrollbarWidth: 'none',
-                '::-webkit-scrollbar': { display: 'none' },
-                WebkitOverflowScrolling: 'touch',
-              }}
-            >
-              {videos.map((v, i) => (
-                <Box key={v.id} flex="0 0 82%" scrollSnapAlign="center">
-                  <VideoCard video={v} index={i} onOpen={setOpenVideo} />
-                </Box>
-              ))}
-            </Flex>
+  if (!featured && !reels.length) return null
 
-            {/* flechas indicadoras */}
-            <Flex justify="center" align="center" gap={5} mt={6}>
-              <Box
-                as="button"
-                aria-label="Video anterior"
-                onClick={() => goTo(active - 1)}
-                isDisabled={active === 0}
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                color={active === 0 ? 'whiteAlpha.300' : 'brand.amber'}
-                pointerEvents={active === 0 ? 'none' : 'auto'}
-                transition="color 0.4s cubic-bezier(0.22,1,0.36,1), transform 0.4s cubic-bezier(0.22,1,0.36,1)"
-                _active={{ transform: 'translateX(-3px)' }}
-              >
-                <Box as={FiChevronLeft} fontSize="22px" />
-              </Box>
+  return (
+    <Box as="section" id="videos" ref={ref} className={inView ? 'in' : ''} sx={sx}>
+      <div className="hd rv">
+        <div>
+          <div className="k">Highlights</div>
+          <h2>Videos</h2>
+        </div>
+        <a className="yt" href={`https://youtu.be/${featured.youtubeId}`} target="_blank" rel="noopener noreferrer">
+          <FaYoutube aria-hidden="true" /> Ver en YouTube
+        </a>
+      </div>
 
-              <Text fontFamily="mono" fontSize="11px" color="whiteAlpha.700" letterSpacing="wider" minW="42px" textAlign="center">
-                {String(active + 1).padStart(2, '0')} / {String(videos.length).padStart(2, '0')}
-              </Text>
+      {featured && <Featured video={featured} />}
 
-              <Box
-                as="button"
-                aria-label="Video siguiente"
-                onClick={() => goTo(active + 1)}
-                isDisabled={active === videos.length - 1}
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                color={active === videos.length - 1 ? 'whiteAlpha.300' : 'brand.amber'}
-                pointerEvents={active === videos.length - 1 ? 'none' : 'auto'}
-                transition="color 0.4s cubic-bezier(0.22,1,0.36,1), transform 0.4s cubic-bezier(0.22,1,0.36,1)"
-                _active={{ transform: 'translateX(3px)' }}
-              >
-                <Box as={FiChevronRight} fontSize="22px" />
-              </Box>
-            </Flex>
-          </Box>
-        </Box>
-      </Box>
+      {reels.length > 0 && (
+        <>
+          <div className="rh rv" style={{ animationDelay: '.2s' }}>
+            <span>Reels</span>
+            {instagram && (
+              <a href={instagram.url} target="_blank" rel="noopener noreferrer"><FaInstagram aria-hidden="true" /> {instagram.handle}</a>
+            )}
+          </div>
+          <div className="reels">
+            {reels.map((v, i) => <Reel key={v.id} v={v} i={i} onOpen={setOpen} />)}
+          </div>
+        </>
+      )}
 
-      {/* ── Modal fullscreen (embed de Instagram) ── */}
       <AnimatePresence>
-        {openVideo && (
-          <MotionBox
-            position="fixed"
-            inset={0}
-            zIndex={2000}
-            bg="rgba(3,6,10,0.95)"
-            backdropFilter="blur(12px)"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            p={{ base: 4, md: 12 }}
-            onClick={() => setOpenVideo(null)}
+        {open && (
+          <motion.div
+            className="viewer" role="dialog" aria-modal="true" aria-label={open.title}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}
+            onClick={() => setOpen(null)}
+            style={vStyle}
           >
-            <Box
-              as="button"
-              position="absolute"
-              top={{ base: 16, md: 14 }}
-              right={{ base: 4, md: 60 }}
-              zIndex={2100}
-              aria-label="Cerrar video"
-              borderRadius="full"
-              p={1}
-              bg="brand.bgRef"
-              backdropFilter="blur(10px)"
-              color="white"
-              onClick={() => setOpenVideo(null)}
-              transition="color 0.3s ease, transform 0.3s ease"
-              _hover={{ color: 'brand.gray2', transform: 'rotate(90deg)' }}
-            >
-              <Box as={FiX} fontSize="32px" />
-            </Box>
-            <MotionBox
-              w="100%"
-              maxW={{ base: '100%', md: '420px' }}
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+            <button ref={closeRef} type="button" aria-label="Cerrar video" onClick={() => setOpen(null)} style={closeStyle}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.97 }}
+              transition={{ duration: 0.45, ease: EASE }}
               onClick={(e) => e.stopPropagation()}
-              boxShadow="0 40px 120px rgba(0,0,0,0.7)"
-              borderRadius="16px"
-              overflow="hidden"
-              bg="#000"
-              mt={{ base: 0, md: '5%' }}
+              style={frameStyle}
             >
-              <AspectRatio ratio={{ base: 9 / 16, md: 9 / 15 }}>
-                <Box
-                  as="iframe"
-                  src={`https://www.instagram.com/reel/${openVideo.instagramId}/embed`}
-                  title={openVideo.fullTitle}
-                  border="none"
-                  scrolling="no"
-                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
-                  w="100%"
-                  h="100%"
-                />
-              </AspectRatio>
-            </MotionBox>
-          </MotionBox>
+              <iframe
+                src={`https://www.instagram.com/reel/${open.instagramId}/embed`}
+                title={open.fullTitle || open.title}
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                style={{ width: '100%', height: '100%', border: 0 }}
+              />
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </Box>
   )
+}
+
+// Visor (estilos en línea porque se monta fuera del flujo del sx)
+const vStyle = {
+  position: 'fixed', inset: 0, zIndex: 2000, background: '#070605f2', backdropFilter: 'blur(10px)',
+  display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '64px 16px 24px',
+}
+const closeStyle = {
+  position: 'absolute', top: 16, right: 16, width: 48, height: 48, borderRadius: '50%', display: 'grid', placeItems: 'center',
+  background: '#1A1712', color: '#F4EDE0', border: '1px solid #d6ae4e40', cursor: 'pointer',
+}
+const frameStyle = {
+  width: 'min(420px, 100%, calc((100svh - 100px) * 9 / 16))', aspectRatio: '9 / 16', borderRadius: 16, overflow: 'hidden',
+  background: '#000', boxShadow: '0 40px 120px #000c',
+}
+
+const sx = {
+  position: 'relative', bg: 'brand.dark', color: 'brand.bone', fontFamily: 'display',
+  p: { base: '64px 20px', lg: '96px 60px' },
+  '& > *': { maxW: '1320px', mx: 'auto' },
+  '.rv': { opacity: 0 },
+  '&.in .rv': { animation: `${rise} 1s ${CSS_EASE} both` },
+  '.hd': { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '20px', mb: { base: '24px', lg: '36px' } },
+  '.hd .k': { fontSize: '11px', fontWeight: 700, letterSpacing: '.28em', textTransform: 'uppercase', color: 'brand.terra' },
+  '.hd h2': { fontWeight: 700, fontSize: 'clamp(44px,5.4vw,84px)', lineHeight: 0.9, color: 'brand.amber', textTransform: 'uppercase', mt: '8px' },
+  '.yt': {
+    display: { base: 'none', md: 'inline-flex' }, alignItems: 'center', gap: '10px', p: '13px 20px', borderRadius: 'full',
+    border: '1.5px solid', borderColor: 'brand.line', color: 'brand.bone', fontSize: '11px', fontWeight: 700, letterSpacing: '.18em',
+    textTransform: 'uppercase', textDecoration: 'none', transition: 'border-color .2s, color .2s',
+  },
+  '.yt svg': { color: 'brand.terra', fontSize: '16px' },
+
+  // Highlight principal
+  '.feat': {
+    position: 'relative', aspectRatio: { base: '4/5', md: '16/9' }, maxH: '78svh', w: '100%', borderRadius: { base: '16px', lg: '22px' },
+    overflow: 'hidden', bg: 'brand.deep', border: '1px solid', borderColor: 'brand.line', boxShadow: '0 40px 90px #000a',
+  },
+  '.feat iframe': { position: 'absolute', inset: 0, w: '100%', h: '100%', border: 0 },
+  '.poster': { position: 'absolute', inset: 0, w: '100%', h: '100%', p: 0, border: 0, bg: 'transparent', cursor: 'pointer', textAlign: 'left', color: 'inherit' },
+  '.poster img': { position: 'absolute', inset: 0, w: '100%', h: '100%', objectFit: 'cover', transition: `transform 1.2s ${CSS_EASE}` },
+  '.poster .shade': {
+    position: 'absolute', inset: 0,
+    background: 'linear-gradient(180deg,#0F0D0A55 0%,transparent 30%,transparent 45%,#0F0D0Aee 100%), linear-gradient(90deg,#0F0D0Acc 0%,transparent 55%)',
+  },
+  '.poster .play': {
+    position: 'absolute', left: '50%', top: { base: '40%', md: '50%' }, transform: 'translate(-50%,-50%)', w: { base: '72px', lg: '104px' }, h: { base: '72px', lg: '104px' },
+    borderRadius: 'full', bg: 'brand.amber', color: 'brand.onAcc', display: 'grid', placeItems: 'center',
+    boxShadow: '0 20px 50px #000a', transition: `transform .4s ${CSS_EASE}`,
+  },
+  '.poster .play svg': { w: '38%', h: '38%', ml: '6%' },
+  '.poster .play i': { position: 'absolute', inset: 0, borderRadius: 'full', border: '2px solid', borderColor: 'brand.amber', animation: `${ring} 2.4s ease-out infinite` },
+  '.poster .info': { position: 'absolute', left: { base: '18px', lg: '40px' }, right: { base: '18px', lg: '40px' }, bottom: { base: '16px', lg: '34px' }, display: 'flex', flexDirection: 'column' },
+  '.poster .k': { display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: { base: '9px', lg: '11px' }, fontWeight: 700, letterSpacing: '.26em', textTransform: 'uppercase', color: 'brand.amber' },
+  '.poster .k svg': { color: 'brand.terra', fontSize: '1.4em' },
+  '.poster .t': { mt: '8px', fontSize: { base: '28px', md: '44px', lg: '64px' }, fontWeight: 700, lineHeight: 0.9, textTransform: 'uppercase', color: 'brand.bone' },
+  '.poster .s': { mt: '10px', fontSize: { base: '10px', lg: '12px' }, letterSpacing: '.2em', textTransform: 'uppercase', color: 'brand.gray' },
+
+  // Reels
+  '.rh': {
+    display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: { base: '36px', lg: '56px' }, mb: '16px',
+    pb: '12px', borderBottom: '1px solid', borderColor: 'brand.line',
+  },
+  '.rh span': { fontSize: '11px', fontWeight: 700, letterSpacing: '.28em', textTransform: 'uppercase', color: 'brand.gray' },
+  '.rh a': { display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 700, letterSpacing: '.08em', color: 'brand.amber', textDecoration: 'none' },
+  '.reels': {
+    display: 'grid', gridTemplateColumns: { base: 'repeat(3, 72vw)', md: 'repeat(3,1fr)' }, gap: { base: '12px', lg: '20px' },
+    overflowX: { base: 'auto', md: 'visible' }, scrollSnapType: 'x mandatory', mx: { base: '-20px', md: 'auto' }, px: { base: '20px', md: 0 },
+    scrollPaddingInline: '20px', scrollbarWidth: 'none', '&::-webkit-scrollbar': { display: 'none' },
+  },
+  '.reel': {
+    position: 'relative', aspectRatio: '4/5', borderRadius: '16px', overflow: 'hidden', border: '1px solid', borderColor: 'brand.line',
+    bg: 'brand.bg2', p: 0, cursor: 'pointer', textAlign: 'left', color: 'inherit', scrollSnapAlign: 'start',
+    transition: `transform .16s ease-out, border-color .3s`,
+  },
+  '.reel:active': { transform: 'scale(.98)' },
+  '.reel img': { position: 'absolute', inset: 0, w: '100%', h: '100%', objectFit: 'cover', objectPosition: 'center 35%', transition: `transform .9s ${CSS_EASE}` },
+  '.reel .shade': { position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#0F0D0A88 0%,transparent 28%,transparent 50%,#0F0D0Af2 100%)' },
+  '.reel .top': { position: 'absolute', top: '14px', left: '16px', right: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'brand.bone', fontSize: '18px' },
+  '.reel .n': { fontSize: '11px', fontWeight: 700, letterSpacing: '.24em', color: 'brand.amber' },
+  '.reel .mini': {
+    position: 'absolute', left: '50%', top: '46%', transform: 'translate(-50%,-50%)', w: '56px', h: '56px', borderRadius: 'full',
+    bg: '#0F0D0A99', border: '1.5px solid', borderColor: 'brand.amber', color: 'brand.amber', display: 'grid', placeItems: 'center',
+    backdropFilter: 'blur(6px)', transition: `background-color .3s, color .3s, transform .4s ${CSS_EASE}`,
+  },
+  '.reel .mini svg': { w: '22px', h: '22px', ml: '3px' },
+  '.reel .info': { position: 'absolute', left: '16px', right: '16px', bottom: '16px', display: 'flex', flexDirection: 'column' },
+  '.reel .c': { fontSize: '9px', fontWeight: 700, letterSpacing: '.24em', textTransform: 'uppercase', color: 'brand.terra' },
+  '.reel .t': { mt: '6px', fontSize: { base: '17px', lg: '20px' }, fontWeight: 700, lineHeight: 1.05, textTransform: 'uppercase', color: 'brand.bone' },
+
+  '@media (hover:hover) and (pointer:fine)': {
+    '.yt:hover': { borderColor: 'brand.amber', color: 'brand.amber' },
+    '.poster:hover img': { transform: 'scale(1.04)' },
+    '.poster:hover .play': { transform: 'translate(-50%,-50%) scale(1.06)' },
+    '.reel:hover': { borderColor: '#d6ae4e99' },
+    '.reel:hover img': { transform: 'scale(1.05)' },
+    '.reel:hover .mini': { bg: 'brand.amber', color: 'brand.onAcc', transform: 'translate(-50%,-50%) scale(1.06)' },
+  },
+  '@media (prefers-reduced-motion: reduce)': {
+    '.rv': { opacity: 1, animation: 'none !important' },
+    '.poster .play i': { animation: 'none' },
+  },
 }
