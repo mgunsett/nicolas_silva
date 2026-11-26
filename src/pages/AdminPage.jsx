@@ -367,6 +367,16 @@ function MatchPreviewCard({ slot, data, label, onEdit, onDelete }) {
 }
 
 export default function AdminPage() {
+  // El panel no se indexa: noindex mientras está abierto
+  useEffect(() => {
+    const meta = document.createElement('meta')
+    meta.name = 'robots'
+    meta.content = 'noindex, nofollow'
+    document.head.appendChild(meta)
+    const prevTitle = document.title
+    document.title = 'Panel | Nicolás Silva'
+    return () => { meta.remove(); document.title = prevTitle }
+  }, [])
   const [user,        setUser]        = useState(null)
   const [loading,     setLoading]     = useState(true)
   const [matchData,   setMatchData]   = useState({ last: {}, next: {} })

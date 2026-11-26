@@ -1,0 +1,14 @@
+{
+  "name": "Nicolás Silva",
+  "short_name": "Nicolás Silva",
+  "description": "Sitio oficial de Nicolás Silva, extremo derecho argentino de Cusco FC.",
+  "start_url": "/",
+  "display": "browser",
+  "lang": "es",
+  "background_color": "#0F0D0A",
+  "theme_color": "#0F0D0A",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
