@@ -223,7 +223,7 @@ export default function Hero() {
           fontWeight={700} lineHeight={0.8} letterSpacing="-.04em" whiteSpace="nowrap" userSelect="none"
           fontSize={{ base: 'min(42vh,102vw)', tab: 'min(100vh,50vw)' }} color="transparent"
           bgImage={`url(${heroWide})`} bgSize="cover" bgPosition="50% 40%" bgClip="text"
-          filter="grayscale(1) sepia(.7) brightness(.55) contrast(1.25)"
+          filter="none"
           sx={{ WebkitTextStroke: '2px var(--chakra-colors-brand-amber)' }}
           {...enter(num, 1.6, 0.1)}
         >
