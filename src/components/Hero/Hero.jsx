@@ -174,7 +174,7 @@ export default function Hero() {
   const { matches } = useMatches()
   const stats = useMemo(() => heroStats(season), [season])
   const top = useMemo(() => [...playerData.stats].sort((a, b) => b.value - a.value)[0], [])
-  const { name, fullName, position, currentClub, league, logoCurrentClub, image, heroWide, number } = playerData
+  const { name, fullName, position, nationalityFlag, nationality, image, heroWide, number } = playerData
 
   return (
     <Grid
@@ -188,12 +188,9 @@ export default function Hero() {
         p={{ base: `0 20px calc(${sv(14, 2.4, 24)} + env(safe-area-inset-bottom))`, tab: '96px 32px 40px 60px' }}
       >
         <Flex align="center" gap="14px" {...enter(rise, 1, 0.2)}>
-          <Image src={logoCurrentClub} alt={`Escudo de ${currentClub}`} boxSize={{ base: '32px', tab: '52px' }} objectFit="contain" />
+          <Image src={nationalityFlag} alt={`Bandera de ${nationality}`} boxSize={{ base: '32px', tab: '42px' }} objectFit="contain" />
           <Box>
-            <Text as="b" display="block" fontSize={{ base: '13px', tab: '18px' }} fontWeight={700} letterSpacing=".12em" textTransform="uppercase">{position}</Text>
-            <Text as="span" display="block" mt="4px" fontSize={{ base: '9px', tab: '11px' }} letterSpacing=".2em" textTransform="uppercase" color="brand.gray">
-              {currentClub} · {league}
-            </Text>
+            <Text as="b" display="block" fontSize={{ base: '13px', tab: '15px' }} fontWeight={700} letterSpacing=".12em" textTransform="uppercase">{position}</Text>
           </Box>
         </Flex>
 
@@ -230,7 +227,7 @@ export default function Hero() {
           {number}
         </Box>
         <Image
-          src={image} fetchpriority="high" alt={`${name} ${fullName}, ${position.toLowerCase()} de ${currentClub}`}
+          src={image} fetchpriority="high" alt={`${name} ${fullName}, ${position.toLowerCase()} `}
           position="absolute" left="50%" bottom={{ base: '-12%', tab: 0 }} h={{ base: '94%', tab: '90%' }} w="auto" maxW="none" transform="translateX(-50%)" zIndex={4}
           filter="drop-shadow(0 30px 50px #000d)" {...enter(slide, 1.3, 0.35)}
         />

@@ -95,7 +95,7 @@ export const playerData = {
     {
       name:    'Cusco FC',
       country: 'Perú',
-      years:   '2024 — Actualidad',
+      years:   '2024 — 2026',
       logo:    cusco,
       titles:  [],
       info:    'Subcampeón de la Liga 1 de Perú 2025',
