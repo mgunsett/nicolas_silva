@@ -56,7 +56,7 @@ export const playerData = {
   number: 26,
   position: 'Extremo Derecho',
   positionShort: 'ED',
-  nationality: 'Argentina',
+  nationality: 'Argentino',
   nationalityFlag: argentina,
   age: 36,
   height: '1.63m',

@@ -8,7 +8,7 @@ import sportfolioWeb from '../../../assets/logo_sport.png'
 // con escudo, links de contacto y "Volver arriba" encima. Crédito del desarrollador al pie.
 
 export default function Footer() {
-  const { fullName, name, position, currentClub, logoCurrentClub, socialMedia, contact } = playerData
+  const { fullName, name, position, currentClub, nationalityFlag, nationality, socialMedia, contact } = playerData
   const links = [
     ...socialMedia.map((s) => ({ name: s.label === 'TransferMarkt' ? 'Transfermarkt' : s.label, url: s.url })),
     ...contact.map((c) => ({ name: c.label.replace(/\b\w/g, (m) => m.toUpperCase()), url: c.url })),
@@ -20,9 +20,9 @@ export default function Footer() {
     <Box as="footer" position="relative" overflow="hidden" bg="brand.deep" color="brand.bone" fontFamily="display" p={{ base: '44px 20px 0', tab: '56px 60px 0' }}>
       <Flex position="relative" zIndex={2} justify="space-between" align="flex-start" gap="24px" wrap="wrap">
         <Flex align="center" gap="18px">
-          <Image src={logoCurrentClub} alt={`Escudo de ${currentClub}`} boxSize={{ base: '52px', tab: '68px' }} objectFit="contain" />
-          <Text fontSize="clamp(22px,2.4vw,34px)" fontWeight={700} textTransform="uppercase" lineHeight={1.05} maxW="20ch">
-            {position}<br /><Text as="em" fontStyle="normal" color="brand.amber">{currentClub}</Text>
+          <Image src={nationalityFlag} alt={`Bandera de ${nationality}`} boxSize={{ base: '52px', tab: '48px' }} objectFit="contain" />
+          <Text fontSize="clamp(22px,2.4vw,24px)" fontWeight={700} textTransform="uppercase" lineHeight={1.05} maxW="20ch">
+            {position}<br /><Text as="em" fontStyle="normal" color="brand.amber">{nationality}</Text>
           </Text>
         </Flex>
         <chakra.button
