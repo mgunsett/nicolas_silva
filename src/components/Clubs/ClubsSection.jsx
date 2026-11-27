@@ -5,8 +5,6 @@ import { playerData } from '../../data/playerData'
 import { EASE, useReveal } from '../../lib/motion'
 import SectionHeader from '../UI/SectionHeader'
 
-// Clubes "Slider de cards": una card alta por club, con flechas, arrastre (mouse), swipe (touch)
-// y teclado sobre scroll-snap. El club actual abre la fila en oro. Barra de progreso y contador abajo.
 
 const pad = (n) => String(n).padStart(2, '0')
 // "2022 — 2023" → "2022–23"; "2024 — Actualidad" → "2024–Hoy"
@@ -31,7 +29,7 @@ function ArrowButton({ dir, label, disabled, onClick }) {
 
 function ClubCard({ club, index, total }) {
   const current = index === 0
-  const tag = current ? 'Actual' : club.info && club.info.length < 14 ? club.info : ''
+  const tag = current ? 'Ultimo club' : club.info && club.info.length < 14 ? club.info : ''
   const title = club.titles[0]?.replace('Campeón de la ', 'Campeón ')
   const ink = current ? 'brand.onAcc' : undefined
   return (
